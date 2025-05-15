@@ -62,6 +62,9 @@ nfpms:
       archlinux:
         dependencies:
           - python-nautilus
+      deb:
+        dependencies:
+          - python3-nautilus
 
 snapshot:
   version_template: "{{ incpatch .Version }}-devel"
