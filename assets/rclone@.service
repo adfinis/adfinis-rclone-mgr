@@ -11,7 +11,6 @@ ExecStart=/usr/bin/rclone mount \
     --cache-dir "%h/.config/google/%I" \
     --vfs-cache-mode writes \
     --vfs-cache-max-size 10G \
-    --vfs-cache-min-free-space 10G \
     "%I:" "%h/google/%I"
 ExecStop=/bin/fusermount -u "%h/google/%I"
 
