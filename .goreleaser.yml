@@ -1,0 +1,83 @@
+---
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: default
+    env:
+      - CGO_ENABLED=0
+    main: .
+    binary: adfinis-rclone-mount
+    ldflags:
+      - -s
+      - -w
+    flags:
+      - -trimpath
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+archives:
+  - id: default
+    name_template: "adfinis-rclone-mount-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
+    ids:
+      - default
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+nfpms:
+  - file_name_template: "adfinis-rclone-mount-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
+    vendor: adfinis
+    homepage: "https://github.com/adfinis/adfinis-rclone-mount"
+    maintainer: "jonahz <jonah.zuercher@adfinis.com>"
+    description: "Configure rclone mounts for Google Drive"
+    license: "GPLv3"
+    formats:
+      - deb
+      - rpm
+      - archlinux
+    dependencies:
+      - rclone
+      - nautilus-python
+    contents:
+      - src: ./assets/rclone@.service
+        dst: /usr/lib/systemd/user/rclone@.service
+      - src: ./assets/google_drive_opener.py
+        dst: /usr/share/nautilus-python/extensions/google_drive_opener.py
+      - src: ./assets/adfinis-rclone-mount.desktop
+        dst: /usr/share/applications/adfinis-rclone-mount.desktop
+      - src: ./assets/adfinis-rclone-mount.png
+        dst: /usr/share/icons/hicolor/512x512/apps/adfinis-rclone-mount.png
+    overrides:
+      archlinux:
+        dependencies:
+          - python-nautilus
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-devel"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+  groups:
+    - title: "New Features"
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: "Bug fixes"
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 10
+    - title: Others
+      order: 999

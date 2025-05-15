@@ -1,0 +1,19 @@
+[Unit]
+Description=rclone: Remote FUSE filesystem for cloud storage config %I
+Documentation=man:rclone(1)
+After=network-online.target
+Wants=network-online.target
+AssertPathIsDirectory="%h/google/%I"
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/rclone mount \
+    --cache-dir "%h/.config/google/%I" \
+    --vfs-cache-mode writes \
+    --vfs-cache-max-size 10G \
+    --vfs-cache-min-free-space 10G \
+    "%I:" "%h/google/%I"
+ExecStop=/bin/fusermount -u "%h/google/%I"
+
+[Install]
+WantedBy=default.target

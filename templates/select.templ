@@ -1,0 +1,45 @@
+package templates
+
+import (
+"github.com/adfinis/adfinis-rclone-mount/models"
+)
+
+templ ComponentDriveSelection(drives []models.Drive) {
+<html>
+
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="min-h-screen bg-[#f4f6fa] text-black font-['Source Sans Pro'] p-8">
+        <form action="/generate" method="POST" class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
+            <h2 class="text-2xl text-center text-[#2e4b98] font-bold mb-4">📂 Select Shared Drives</h2>
+            <div class="grid gap-4 mb-6">
+                for _, drive := range drives {
+                <div class="flex items-center justify-between bg-[#f9fafb] p-4 rounded border">
+                    <input type="hidden" name="drive_name" value={ drive.ID + ":" + drive.Name } />
+                    <span class="text-gray-800">{ drive.Name }</span>
+                    <div class="flex space-x-6">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="drive" value={ drive.ID } checked class="accent-[#2e4b98]" />
+                            <span class="text-sm text-gray-600">Enable</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="automount" value={ drive.ID } checked
+                                class="accent-[#2e4b98]" />
+                            <span class="text-sm text-gray-600">Auto-mount</span>
+                        </label>
+                    </div>
+                </div>
+                }
+            </div>
+            <button type="submit" class="w-full py-2 bg-[#2e4b98] hover:bg-[#1b3a7d] text-white rounded font-semibold">
+                Generate Config
+            </button>
+        </form>
+    </div>
+</body>
+
+</html>
+}

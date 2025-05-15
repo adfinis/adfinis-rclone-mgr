@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Adfinis Rclone Mount
+Comment=Configure rclone mounts for Google Drive
+Exec=/usr/bin/adfinis-rclone-mount
+Icon=adfinis-rclone-mount
+Terminal=false
+Type=Application
+Categories=Utility;Network;
