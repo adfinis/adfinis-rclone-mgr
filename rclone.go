@@ -42,14 +42,28 @@ func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, cl
 	for _, drive := range drives {
 		driveName := sanitizeDriveName(drive.Name)
 		if drive.Enabled {
-			configMap := rc.Params{
-				"type":           "drive",
-				"team_drive":     drive.ID,
-				"root_folder_id": "",
-				"scope":          "drive",
-				"client_id":      clientID,
-				"client_secret":  clientSecret,
-				"token":          token,
+			var configMap rc.Params
+			// special case for personal drive
+			if drive.ID == "my_drive" {
+				configMap = rc.Params{
+					"type":           "drive",
+					"root_folder_id": "",
+					"scope":          "drive",
+					"client_id":      clientID,
+					"client_secret":  clientSecret,
+					"token":          token,
+				}
+			} else {
+				// shared drive
+				configMap = rc.Params{
+					"type":           "drive",
+					"team_drive":     drive.ID,
+					"root_folder_id": "",
+					"scope":          "drive",
+					"client_id":      clientID,
+					"client_secret":  clientSecret,
+					"token":          token,
+				}
 			}
 			_, err := config.CreateRemote(ctx, driveName, "drive", configMap, config.UpdateRemoteOpt{NonInteractive: true})
 			if err != nil {

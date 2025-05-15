@@ -251,7 +251,12 @@ func checkAvailableDrives(ctx context.Context, oauthConfig *oauth2.Config, token
 		return nil, err
 	}
 
-	var sharedDrives []models.Drive
+	sharedDrives := []models.Drive{
+		{
+			Name: "My Drive",
+			ID:   "my_drive",
+		},
+	}
 	pageToken := ""
 	for {
 		req := driveService.Drives.List().PageSize(10)
