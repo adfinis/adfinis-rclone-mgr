@@ -302,7 +302,7 @@ func main() {
 	select {
 	case <-ctx.Done():
 		log.Println("Server stopped")
-	case <-time.After(5 * time.Minute):
+	case <-time.After(time.Hour):
 		log.Println("Server timed out")
 	}
 
