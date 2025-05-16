@@ -48,7 +48,12 @@ func newHttpHandler(ctx context.Context, cancel context.CancelFunc) *http.ServeM
 	router := http.NewServeMux()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if err := templates.ComponentInputForm().Render(ctx, w); err != nil {
+		// try to read the oidc credentials from the local keyring
+		clientID, clientSecret, err := getCredentials()
+		if err != nil {
+			log.Printf("Failed to get credentials from keyring: %v", err)
+		}
+		if err := templates.ComponentInputForm(clientID, clientSecret).Render(ctx, w); err != nil {
 			log.Printf("Failed to render template: %v", err)
 			http.Error(w, "Failed to render template", http.StatusInternalServerError)
 			return
@@ -65,6 +70,11 @@ func newHttpHandler(ctx context.Context, cancel context.CancelFunc) *http.ServeM
 		if clientID == "" || clientSecret == "" {
 			http.Error(w, "Missing client_id or client_secret", http.StatusBadRequest)
 			return
+		}
+
+		// save the credentials to the local keyring
+		if err := setCredentials(clientID, clientSecret); err != nil {
+			log.Printf("Failed to set credentials in keyring: %v", err)
 		}
 
 		oauthConfig := &oauth2.Config{

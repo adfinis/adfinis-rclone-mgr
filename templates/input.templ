@@ -1,6 +1,6 @@
 package templates
 
-templ ComponentInputForm() {
+templ ComponentInputForm(clientID, clientSecret string) {
 <html>
 
 <head>
@@ -12,10 +12,10 @@ templ ComponentInputForm() {
         <form action="/login" method="POST" class="bg-white p-8 rounded-xl shadow-xl w-full max-w-md">
             <h1 class="text-2xl font-semibold text-[#2e4b98] mb-6 text-center">🔐 Google OIDC Login</h1>
             <label class="block mb-2 text-sm text-gray-600">Client ID</label>
-            <input name="client_id" required
+            <input name="client_id" required value={ clientID }
                 class="w-full p-2 rounded bg-white border border-[#2e4b98] mb-4 focus:outline-none focus:ring focus:ring-[#2e4b98]" />
             <label class="block mb-2 text-sm text-gray-600">Client Secret</label>
-            <input name="client_secret" type="password" required
+            <input name="client_secret" type="password" required value={ clientSecret }
                 class="w-full p-2 rounded bg-white border border-[#2e4b98] mb-6 focus:outline-none focus:ring focus:ring-[#2e4b98]" />
             <button type="submit"
                 class="w-full py-2 bg-[#2e4b98] hover:bg-[#1b3a7d] text-white rounded font-semibold">Login</button>

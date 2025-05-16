@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func ComponentInputForm() templ.Component {
+func ComponentInputForm(clientID, clientSecret string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,33 @@ func ComponentInputForm() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<html><head><script src=\"https://cdn.tailwindcss.com\"></script></head><body><div class=\"min-h-screen bg-[#f4f6fa] text-black flex items-center justify-center font-[&#39;Source Sans Pro&#39;]\"><form action=\"/login\" method=\"POST\" class=\"bg-white p-8 rounded-xl shadow-xl w-full max-w-md\"><h1 class=\"text-2xl font-semibold text-[#2e4b98] mb-6 text-center\">🔐 Google OIDC Login</h1><label class=\"block mb-2 text-sm text-gray-600\">Client ID</label> <input name=\"client_id\" required class=\"w-full p-2 rounded bg-white border border-[#2e4b98] mb-4 focus:outline-none focus:ring focus:ring-[#2e4b98]\"> <label class=\"block mb-2 text-sm text-gray-600\">Client Secret</label> <input name=\"client_secret\" type=\"password\" required class=\"w-full p-2 rounded bg-white border border-[#2e4b98] mb-6 focus:outline-none focus:ring focus:ring-[#2e4b98]\"> <button type=\"submit\" class=\"w-full py-2 bg-[#2e4b98] hover:bg-[#1b3a7d] text-white rounded font-semibold\">Login</button></form></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<html><head><script src=\"https://cdn.tailwindcss.com\"></script></head><body><div class=\"min-h-screen bg-[#f4f6fa] text-black flex items-center justify-center font-[&#39;Source Sans Pro&#39;]\"><form action=\"/login\" method=\"POST\" class=\"bg-white p-8 rounded-xl shadow-xl w-full max-w-md\"><h1 class=\"text-2xl font-semibold text-[#2e4b98] mb-6 text-center\">🔐 Google OIDC Login</h1><label class=\"block mb-2 text-sm text-gray-600\">Client ID</label> <input name=\"client_id\" required value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(clientID)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/input.templ`, Line: 15, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"w-full p-2 rounded bg-white border border-[#2e4b98] mb-4 focus:outline-none focus:ring focus:ring-[#2e4b98]\"> <label class=\"block mb-2 text-sm text-gray-600\">Client Secret</label> <input name=\"client_secret\" type=\"password\" required value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(clientSecret)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/input.templ`, Line: 18, Col: 85}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"w-full p-2 rounded bg-white border border-[#2e4b98] mb-6 focus:outline-none focus:ring focus:ring-[#2e4b98]\"> <button type=\"submit\" class=\"w-full py-2 bg-[#2e4b98] hover:bg-[#1b3a7d] text-white rounded font-semibold\">Login</button></form></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
