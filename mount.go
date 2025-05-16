@@ -62,9 +62,9 @@ func umount(cmd *cobra.Command, args []string) {
 	}
 	for _, arg := range args {
 		if err := stopService(cmd.Context(), conn, arg); err != nil {
-			log.Printf("Failed to mount drive: %v", err)
+			log.Printf("Failed to umount drive: %v", err)
 			continue
 		}
-		log.Println("Mounted Drive:", arg)
+		log.Println("Umounted Drive:", arg)
 	}
 }
