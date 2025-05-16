@@ -149,14 +149,16 @@ func list(cmd *cobra.Command, _ []string) {
 func renderTable(statuses []dbus.UnitStatus) {
 	rows := make([][]string, len(statuses))
 	for i, status := range statuses {
+
 		var prefix string
-		if status.ActiveState == "active" {
+		switch status.ActiveState {
+		case "active":
 			prefix = "✅"
-		} else if status.ActiveState == "failed" {
+		case "failed":
 			prefix = "❌"
-		} else if status.ActiveState == "inactive" {
+		case "inactive":
 			prefix = "⬜"
-		} else {
+		default:
 			prefix = "❓"
 		}
 		rows[i] = []string{
@@ -176,8 +178,8 @@ func renderTable(statuses []dbus.UnitStatus) {
 		Border(lipgloss.NormalBorder()).
 		BorderStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("2e4b98"))).
 		StyleFunc(func(row, col int) lipgloss.Style {
-			switch {
-			case row == table.HeaderRow:
+			switch row {
+			case table.HeaderRow:
 				return headerStyle
 			default:
 				return cellStyle
