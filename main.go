@@ -56,6 +56,7 @@ func init() {
 	rootCmd.AddCommand(
 		mountCmd,
 		umountCmd,
+		listCmd,
 		versionCmd,
 	)
 }

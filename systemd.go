@@ -148,3 +148,11 @@ func disableService(ctx context.Context, conn *dbus.Conn, name string) error {
 	}
 	return nil
 }
+
+func statusServices(ctx context.Context, conn *dbus.Conn, names []string) ([]dbus.UnitStatus, error) {
+	unitNames := make([]string, len(names))
+	for i, n := range names {
+		unitNames[i] = fmt.Sprintf("rclone@%s.service", n)
+	}
+	return conn.ListUnitsByNamesContext(ctx, unitNames)
+}
