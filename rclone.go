@@ -15,6 +15,11 @@ import (
 	_ "github.com/rclone/rclone/backend/drive" // make sure drive backend is registered
 )
 
+func init() {
+	// make sure we have a config file
+	configfile.Install()
+}
+
 // dont ask...
 func sanitizeDriveName(name string) string {
 	name = strings.TrimSpace(name)
@@ -35,9 +40,6 @@ func sanitizeDriveName(name string) string {
 }
 
 func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, clientSecret, token string) error {
-	// make sure we have a config file
-	configfile.Install()
-
 	// add drives
 	for _, drive := range drives {
 		driveName := sanitizeDriveName(drive.Name)
@@ -77,4 +79,8 @@ func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, cl
 		}
 	}
 	return nil
+}
+
+func getRemotes() []string {
+	return config.GetRemoteNames()
 }

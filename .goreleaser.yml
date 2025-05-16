@@ -6,6 +6,11 @@ before:
   hooks:
     - go tool templ generate
     - go mod tidy
+    - rm -rf completions
+    - mkdir completions
+    - sh -c 'go run . completion "bash" >./completions/{{ .ProjectName }}.bash'
+    - sh -c 'go run . completion "zsh" >./completions/{{ .ProjectName }}.zsh'
+    - sh -c 'go run . completion "fish" >./completions/{{ .ProjectName }}.fish'
 
 builds:
   - id: default
@@ -16,6 +21,10 @@ builds:
     ldflags:
       - -s
       - -w
+      - -X main.Version={{ .Version }}
+      - -X main.Commit={{ .Commit }}
+      - -X main.Date={{ .Date }}
+      - -X main.BuiltBy=goreleaser
     flags:
       - -trimpath
     goos:
@@ -28,9 +37,12 @@ archives:
     name_template: "adfinis-rclone-mount-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
     ids:
       - default
+    wrap_in_directory: true
     files:
       - LICENSE
       - README.md
+      - completions/*
+
 
 checksum:
   name_template: "checksums.txt"
@@ -58,6 +70,12 @@ nfpms:
         dst: /usr/share/applications/adfinis-rclone-mount.desktop
       - src: ./assets/adfinis-rclone-mount.png
         dst: /usr/share/icons/hicolor/512x512/apps/adfinis-rclone-mount.png
+      - src: ./completions/{{ .ProjectName }}.bash
+        dst: /etc/bash_completion.d/{{ .ProjectName }}
+      - src: ./completions/{{ .ProjectName }}.fish
+        dst: /usr/share/fish/vendor_completions.d/{{ .ProjectName }}.fish
+      - src: ./completions/{{ .ProjectName }}.zsh
+        dst: /usr/share/zsh/site-functions/_{{ .ProjectName }}
     overrides:
       archlinux:
         dependencies:

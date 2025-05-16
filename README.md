@@ -15,6 +15,7 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
    - **Debian/Ubuntu**: `sudo apt install adfinis-rclone-mount-<version>.deb`
    - **Fedora/RHEL**: `sudo dnf install adfinis-rclone-mount-<version>.rpm`
    - **Arch Linux**: Use the `.pkg.tar.zst` file with `pacman -U`.
+3. Stop nautilus to make sure the new extension gets picked up: `nautilus -q`
 
 ### Manual Installation
 1. Clone the repository:
@@ -33,17 +34,40 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
    sudo cp assets/adfinis-rclone-mount.desktop /usr/share/applications/
    sudo cp assets/adfinis-rclone-mount.png /usr/share/icons/hicolor/512x512/apps/
    ```
+4. Optional: Autocompletion  
+   ```
+   ./adfinis-rclone-mount completion --help
+   ```
 
 ## 🛠️ Usage
 1. Start the application:
    1. Via Desktop: Just search for `adfinis-rclone-mount`
    2. Via Terminal:
    ```bash
-   ./adfinis-rclone-mount
+   adfinis-rclone-mount
    ```
 2. Open the provided URL in your browser to configure Google Drive mounts.
 3. Follow the on-screen instructions to log in, select drives, and generate configurations.
 4. Use the Nautilus context menu to open files directly in Google Drive.
+
+### Managing Mounts
+
+You can now manage your Google Drive mounts directly from the terminal using the following commands:
+
+- **Mount a configured share:**
+  ```bash
+  adfinis-rclone-mount mount <share-name>
+  ```
+  Replace `<share-name>` with the name of your configured Google Drive share.  
+  You can use tab for autocompletion of the share names.
+
+- **Unmount a share:**
+  ```bash
+  adfinis-rclone-mount umount <share-name>
+  ```
+  This will safely unmount the specified share.
+
+These commands allow you to quickly mount or unmount your Google Drive shares as needed.
 
 ## 📜 License
 This project is licensed under the [GNU General Public License v3.0](./LICENSE).  

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -15,10 +16,22 @@ import (
 	"github.com/adfinis/adfinis-rclone-mount/models"
 	"github.com/adfinis/adfinis-rclone-mount/templates"
 	"github.com/google/uuid"
+	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	drive "google.golang.org/api/drive/v3"
 	"google.golang.org/api/option"
+)
+
+var (
+	// Version is the current version of gmotd
+	Version = "devel"
+	// Commit is the git commit hash of the current version.
+	Commit = "none"
+	// Date is the build date of the current version.
+	Date = "unknown"
+	// BuiltBy is the user who built the current version.
+	BuiltBy = "unknown"
 )
 
 const (
@@ -28,6 +41,63 @@ const (
 var (
 	state = uuid.NewString()
 )
+
+var rootCmdFlags struct {
+	mountAll  bool
+	umountAll bool
+}
+
+var rootCmd = &cobra.Command{
+	Use:   "adfinis-rclone-mount",
+	Short: "Manage Google Drive mounts using Rclone",
+	Run:   root,
+	CompletionOptions: cobra.CompletionOptions{
+		HiddenDefaultCmd: true,
+	},
+	Version: Version,
+}
+
+func init() {
+	rootCmd.AddCommand(
+		mountCmd,
+		umountCmd,
+		versionCmd,
+	)
+}
+
+func root(cmd *cobra.Command, _ []string) {
+	ctx, cancel := context.WithCancel(cmd.Context())
+
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", listenPort),
+		Handler: newHttpHandler(ctx, cancel),
+	}
+	go func() {
+		log.Printf("Visit http://localhost:%d to start login", listenPort)
+		openBrowser(fmt.Sprintf("http://localhost:%d/", listenPort))
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+	}()
+
+	select {
+	case <-ctx.Done():
+		log.Println("Server stopped")
+	case <-time.After(time.Hour):
+		log.Println("Server timed out")
+	}
+
+	ctxShutdown, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelShutdown()
+	if err := srv.Shutdown(ctxShutdown); err != nil {
+		log.Fatalf("Server shutdown error: %v", err)
+	}
+	log.Println("Server shutdown gracefully")
+}
+
+func Execute() error {
+	return rootCmd.Execute()
+}
 
 func openBrowser(url string) {
 	var err error
@@ -294,32 +364,19 @@ func checkAvailableDrives(ctx context.Context, oauthConfig *oauth2.Config, token
 	return sharedDrives, nil
 }
 
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the version info",
+	Run: func(_ *cobra.Command, _ []string) {
+		fmt.Printf("Version: %s\n", Version)
+		fmt.Printf("Commit: %s\n", Commit)
+		fmt.Printf("Date: %s\n", Date)
+		fmt.Printf("BuiltBy: %s\n", BuiltBy)
+	},
+}
+
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", listenPort),
-		Handler: newHttpHandler(ctx, cancel),
+	if err := Execute(); err != nil {
+		os.Exit(1)
 	}
-	go func() {
-		log.Printf("Visit http://localhost:%d to start login", listenPort)
-		openBrowser(fmt.Sprintf("http://localhost:%d/", listenPort))
-		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-			log.Fatalf("HTTP server error: %v", err)
-		}
-	}()
-
-	select {
-	case <-ctx.Done():
-		log.Println("Server stopped")
-	case <-time.After(time.Hour):
-		log.Println("Server timed out")
-	}
-
-	ctxShutdown, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelShutdown()
-	if err := srv.Shutdown(ctxShutdown); err != nil {
-		log.Fatalf("Server shutdown error: %v", err)
-	}
-	log.Println("Server shutdown gracefully")
 }
