@@ -42,11 +42,6 @@ var (
 	state = uuid.NewString()
 )
 
-var rootCmdFlags struct {
-	mountAll  bool
-	umountAll bool
-}
-
 var rootCmd = &cobra.Command{
 	Use:   "adfinis-rclone-mount",
 	Short: "Manage Google Drive mounts using Rclone",
