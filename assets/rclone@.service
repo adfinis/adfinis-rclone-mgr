@@ -8,7 +8,7 @@ AssertPathIsDirectory="%h/google/%I"
 [Service]
 Type=notify
 ExecStart=/usr/bin/rclone mount \
-    --cache-dir "%h/.config/google/%I" \
+    --cache-dir "%h/.cache/google/%I" \
     --vfs-cache-mode writes \
     --vfs-cache-max-size 10G \
     "%I:" "%h/google/%I"
