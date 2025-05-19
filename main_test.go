@@ -5,9 +5,11 @@ import (
 	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
+	"path"
 	"strings"
 	"testing"
 
+	"github.com/adrg/xdg"
 	"github.com/coreos/go-systemd/v22/dbus"
 	"github.com/stretchr/testify/assert"
 	"github.com/zalando/go-keyring"
@@ -143,12 +145,12 @@ func TestStatusesToServiceStatuses(t *testing.T) {
 				{
 					Name:      "test",
 					Status:    "active",
-					MountPath: "~/google/test",
+					MountPath: path.Join(xdg.Home, "google", "test"),
 				},
 				{
 					Name:      "my_drive",
 					Status:    "inactive",
-					MountPath: "~/google/my_drive",
+					MountPath: path.Join(xdg.Home, "google", "my_drive"),
 				},
 			},
 		},

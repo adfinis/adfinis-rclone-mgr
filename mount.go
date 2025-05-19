@@ -69,6 +69,10 @@ func mount(cmd *cobra.Command, args []string) {
 		args = getRemotes()
 	}
 	for _, arg := range args {
+		if err := ensureFolderExists(getDriveDataPath(arg)); err != nil {
+			log.Printf("Failed to create mount path: %v", err)
+			continue
+		}
 		if err := startService(cmd.Context(), conn, arg); err != nil {
 			log.Printf("Failed to mount drive: %v", err)
 			continue
@@ -165,7 +169,7 @@ func renderTable(statuses []dbus.UnitStatus) {
 			prefix,
 			status.Name,
 			status.ActiveState,
-			fmt.Sprintf("~/google/%s", unitNameToDriveName(status.Name)),
+			getDriveDataPath(unitNameToDriveName(status.Name)),
 		}
 	}
 
@@ -205,7 +209,7 @@ func statusesToServiceStatuses(statuses []dbus.UnitStatus) []serviceStatus {
 		serviceStatuses[i] = serviceStatus{
 			Name:      unitNameToDriveName(status.Name),
 			Status:    status.ActiveState,
-			MountPath: fmt.Sprintf("~/google/%s", unitNameToDriveName(status.Name)),
+			MountPath: getDriveDataPath(unitNameToDriveName(status.Name)),
 		}
 	}
 	return serviceStatuses
