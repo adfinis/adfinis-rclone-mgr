@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"log"
 
@@ -18,25 +17,6 @@ import (
 func init() {
 	// make sure we have a config file
 	configfile.Install()
-}
-
-// dont ask...
-func sanitizeDriveName(name string) string {
-	name = strings.TrimSpace(name)
-	name = strings.ReplaceAll(name, " ", "_")
-	name = strings.ReplaceAll(name, "/", "_")
-	name = strings.ReplaceAll(name, "\\", "_")
-	name = strings.ReplaceAll(name, ":", "_")
-	name = strings.ReplaceAll(name, "?", "_")
-	name = strings.ReplaceAll(name, "*", "_")
-	name = strings.ReplaceAll(name, "\"", "_")
-	name = strings.ReplaceAll(name, "<", "_")
-	name = strings.ReplaceAll(name, ">", "_")
-	name = strings.ReplaceAll(name, "|", "_")
-	name = strings.ReplaceAll(name, "'", "_")
-	name = strings.ReplaceAll(name, "&", "_")
-	name = strings.ReplaceAll(name, "%", "_")
-	return name
 }
 
 func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, clientSecret, token string) error {

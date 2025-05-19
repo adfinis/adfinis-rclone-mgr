@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
@@ -187,14 +186,4 @@ func renderYAML(statuses []dbus.UnitStatus) {
 		log.Fatalln("Failed to marshal YAML:", err)
 	}
 	fmt.Println(string(yamlData))
-}
-
-func unitNameToDriveName(name string) string {
-	name = strings.Split(name, "@")[1]
-	name = strings.Split(name, ".service")[0]
-	return name
-}
-
-func driveNameToUnitName(name string) string {
-	return fmt.Sprintf("rclone@%s.service", name)
 }

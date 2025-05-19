@@ -5,20 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/adfinis/adfinis-rclone-mgr/models"
-	"github.com/adrg/xdg"
 	"github.com/coreos/go-systemd/v22/dbus"
 )
-
-func ensureFolderExists(path string) error {
-	err := os.MkdirAll(path, os.ModePerm)
-	if err != nil && !os.IsExist(err) {
-		return fmt.Errorf("failed to create directory %s: %w", path, err)
-	}
-	return nil
-}
 
 func removeDriveCache(name string) error {
 	cachePath := getDriveCachePath(name)
@@ -32,14 +22,6 @@ func removeDriveCache(name string) error {
 		return fmt.Errorf("failed to remove cache path %s: %w", cachePath, err)
 	}
 	return nil
-}
-
-func getDriveDataPath(name string) string {
-	return path.Join(xdg.Home, "google", name)
-}
-
-func getDriveCachePath(name string) string {
-	return path.Join(xdg.CacheHome, "google", name)
 }
 
 func handleSystemdServices(ctx context.Context, drives []models.Drive) error {
