@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	// Version is the current version of gmotd
+	// Version is the current version of adfinis-rclone-mgr.
 	Version = "devel"
 	// Commit is the git commit hash of the current version.
 	Commit = "none"
@@ -39,6 +39,7 @@ func init() {
 		mountCmd,
 		umountCmd,
 		listCmd,
+		journaldReaderCmd,
 		versionCmd,
 	)
 }
@@ -99,10 +100,18 @@ func init() {
 var listCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "List all available mounts and their status",
+	Run:   list,
+}
+
+var journaldReaderCmd = &cobra.Command{
+	Use:   "journald-reader",
+	Short: "Read logs from systemd journal and send desktop notifications based on them",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
-	Run: list,
+	Args:              cobra.ExactArgs(1),
+	ValidArgsFunction: availableMountsForArgs,
+	Run:               journaldReader,
 }
 
 var versionCmd = &cobra.Command{

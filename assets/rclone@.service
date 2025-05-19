@@ -3,6 +3,7 @@ Description=rclone: Remote FUSE filesystem for cloud storage config %I
 Documentation=man:rclone(1)
 After=network-online.target
 Wants=network-online.target
+Wants=adfinis-rclone-mgr@%i.service
 AssertPathIsDirectory="%h/google/%I"
 
 [Service]

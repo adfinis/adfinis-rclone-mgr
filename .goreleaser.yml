@@ -65,6 +65,8 @@ nfpms:
     conflicts:
       - adfinis-rclone-mount
     contents:
+      - src: ./assets/adfinis-rclone-mgr@.service
+        dst: /usr/lib/systemd/user/adfinis-rclone-mgr@.service
       - src: ./assets/rclone@.service
         dst: /usr/lib/systemd/user/rclone@.service
       - src: ./assets/google_drive_opener.py

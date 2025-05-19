@@ -24,6 +24,7 @@ func TestRootCmd_HasSubcommands(t *testing.T) {
 		"mount",
 		"umount",
 		"ls",
+		"journald-reader",
 		"version",
 	}
 	for _, name := range expected {

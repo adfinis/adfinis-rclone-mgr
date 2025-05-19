@@ -1,0 +1,239 @@
+package main
+
+import (
+	"bufio"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"os/exec"
+	"path"
+	"strings"
+
+	"github.com/adrg/xdg"
+	"github.com/spf13/cobra"
+)
+
+// LogEntry represents a parsed journalctl log line
+type LogEntry struct {
+	Message   string `json:"MESSAGE"`
+	Timestamp string `json:"__REALTIME_TIMESTAMP"`
+	Priority  string `json:"PRIORITY"`
+	Unit      string `json:"_SYSTEMD_UNIT"`
+}
+
+func journaldReader(cmd *cobra.Command, args []string) {
+	ctx := cmd.Context()
+	driveName := args[0]
+	logs, errs := startJournalReader(ctx, driveName)
+
+	go func() {
+		for l := range logs {
+			handleLogEntry(l, driveName)
+		}
+	}()
+
+	go func() {
+		for err := range errs {
+			fmt.Printf("Error: %v\n", err)
+		}
+	}()
+
+	<-ctx.Done()
+}
+
+func startJournalReader(ctx context.Context, name string) (<-chan LogEntry, <-chan error) {
+	logs := make(chan LogEntry)
+	errs := make(chan error, 1)
+
+	cmd := exec.Command(
+		"journalctl",
+		"--output=json",
+		"--follow",
+		"--user",
+		"--since=now",
+		fmt.Sprintf("--unit=%s", driveNameToUnitName(name)),
+	)
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		errs <- fmt.Errorf("failed to get stdout: %w", err)
+		close(logs)
+		close(errs)
+		return logs, errs
+	}
+
+	if err := cmd.Start(); err != nil {
+		errs <- fmt.Errorf("failed to start journalctl: %w", err)
+		close(logs)
+		close(errs)
+		return logs, errs
+	}
+
+	go func() {
+		defer close(logs)
+		defer close(errs)
+
+		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			select {
+			case <-ctx.Done():
+				_ = cmd.Process.Kill()
+				return
+			default:
+				var entry LogEntry
+				line := scanner.Text()
+				if err := json.Unmarshal([]byte(line), &entry); err != nil {
+					errs <- fmt.Errorf("failed to parse log line: %w", err)
+					continue
+				}
+				logs <- entry
+			}
+		}
+
+		if err := scanner.Err(); err != nil && err != io.EOF {
+			errs <- fmt.Errorf("scanner error: %w", err)
+		}
+
+		if err := cmd.Wait(); err != nil {
+			errs <- fmt.Errorf("journalctl command error: %w", err)
+		}
+	}()
+
+	return logs, errs
+}
+
+func handleLogEntry(entry LogEntry, driveName string) {
+	if !strings.Contains(entry.Message, "insufficientParentPermissions") {
+		return
+	}
+
+	fileName := strings.TrimSpace(strings.SplitN(entry.Message, ":", 3)[1])
+	filePath := fileNameToPath(driveName, fileName)
+
+	// make sure file still exists
+	if _, err := os.Stat(filePath); err != nil {
+		return
+	}
+
+	title := fmt.Sprintf("Drive Error: %s", driveName)
+	message := fmt.Sprintf(`You have insufficient permissions to write a file:
+
+- %s
+
+Make sure to move the file you just created to another location immediately!
+			`, path.Join(getDriveDataPath(driveName), filePath))
+	if err := sendDesktopNotificationError(title, message); err != nil {
+		fmt.Printf("Failed to send notification: %v\n", err)
+	}
+
+	// open file selector to select the file location
+	title = "Select File Location"
+	message = fmt.Sprintf("Select a new location for the file:\n\n%s", filePath)
+
+	// open the file selector in the "overview" folder with all other drives
+	suggestedPath := path.Join(xdg.Home, "google", path.Base(filePath))
+	fmt.Println(suggestedPath)
+	newFilePath, err := openFileSelector(title, message, suggestedPath)
+	if err != nil {
+		if strings.Contains(err.Error(), "exit status 1") {
+			fmt.Println("File selector was cancelled, skipping...")
+			return
+		}
+		fmt.Printf("Failed to open file selector: %v\n", err)
+		return
+	}
+	if newFilePath == "" {
+		fmt.Println("No file selected, skipping...")
+		return
+	}
+	if err := moveFile(filePath, newFilePath); err != nil {
+		title = "Error Moving File"
+		message = fmt.Sprintf("Failed to move file:\n\n%s", err)
+		if err := sendDesktopNotificationError(title, message); err != nil {
+			fmt.Printf("Failed to send notification: %v\n", err)
+		}
+		fmt.Printf("Failed to move file: %v\n", err)
+		return
+	}
+	title = "File Moved"
+	message = fmt.Sprintf("File moved to:\n\n%s", newFilePath)
+	if err := sendDesktopNotificationInfo(title, message); err != nil {
+		fmt.Printf("Failed to send notification: %v\n", err)
+	}
+	fmt.Printf("File %q moved to: %s\n", filePath, newFilePath)
+}
+
+// moveFile moves a file from oldPath to newPath by copying the file and removing the old file.
+// This is a workaround for the issue where os.Rename fails across different filesystems (and rclone mounts).
+func moveFile(src, dest string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close() // nolint:errcheck
+
+	info, err := in.Stat()
+	if err != nil {
+		return err
+	}
+
+	// create new file. This will overwrite the file if it exists
+	out, err := os.OpenFile(dest, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, info.Mode())
+	if err != nil {
+		if strings.Contains(err.Error(), "is a directory") {
+			return fmt.Errorf("Destination %q is a directory.\n\nYou cant replace a file with a directory!", dest) // nolint:staticcheck
+		}
+		return err
+	}
+	defer out.Close() // nolint:errcheck
+
+	_, err = io.Copy(out, in)
+	if err != nil {
+		return err
+	}
+
+	// Close the files before removing
+	in.Close()  // nolint:errcheck
+	out.Close() // nolint:errcheck
+
+	// Remove the original file
+	if err = os.Remove(src); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func sendDesktopNotificationError(title, message string) error {
+	cmd := exec.Command("zenity", "--error", "--text", message, "--title", title)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to send notification: %w", err)
+	}
+	return nil
+}
+
+func sendDesktopNotificationInfo(title, message string) error {
+	cmd := exec.Command("zenity", "--info", "--text", message, "--title", title)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to send notification: %w", err)
+	}
+	return nil
+}
+
+func openFileSelector(title, message, fileName string) (string, error) {
+	cmd := exec.Command(
+		"zenity",
+		"--file-selection",
+		"--save",
+		"--confirm-overwrite",
+		"--title", title,
+		"--text", message,
+		"--filename", fileName,
+	)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to open file selector: %w", err)
+	}
+	return strings.TrimSpace(string(output)), nil
+}

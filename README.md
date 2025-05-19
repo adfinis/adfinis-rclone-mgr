@@ -12,6 +12,7 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 - Systemd service templates for managing Rclone mounts.
 - Nautilus integration for opening files directly in Google Drive and copying shareable links.
 - CLI Tool to mount and umount shares
+- Better error handling in case of permission errors
 
 ## 📦 Installation
 
@@ -47,6 +48,7 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 4. Install the assets:
    ```bash
    sudo cp assets/rclone@.service /usr/lib/systemd/user/
+   sudo cp assets/adfinis-rclone-mgr@.service /usr/lib/systemd/user/
    sudo cp assets/google_drive_opener.py /usr/share/nautilus-python/extensions/
    sudo cp assets/adfinis-rclone-mgr.desktop /usr/share/applications/
    sudo cp assets/adfinis-rclone-mgr.png /usr/share/icons/hicolor/512x512/apps/

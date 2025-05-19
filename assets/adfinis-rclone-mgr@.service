@@ -1,0 +1,12 @@
+[Unit]
+Description=adfinis-rclone-mgr journald reader for %I
+After=rclone@%i.service
+PartOf=rclone@%i.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/adfinis-rclone-mgr journald-reader %I
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
