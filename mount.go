@@ -13,7 +13,7 @@ import (
 	"github.com/coreos/go-systemd/v22/dbus"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var mountCmd = &cobra.Command{
