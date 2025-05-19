@@ -11,6 +11,7 @@ require (
 	github.com/rclone/rclone v1.69.2
 	github.com/samber/lo v1.47.0
 	github.com/spf13/cobra v1.8.1
+	github.com/stretchr/testify v1.10.0
 	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.233.0
@@ -37,6 +38,7 @@ require (
 	github.com/cli/browser v1.3.0 // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
 	github.com/danieljoos/wincred v1.2.2 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/ebitengine/purego v0.8.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -60,6 +62,7 @@ require (
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
@@ -94,6 +97,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250505200425-f936aa4a68b2 // indirect
 	google.golang.org/grpc v1.72.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 tool github.com/a-h/templ/cmd/templ
