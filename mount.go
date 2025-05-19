@@ -19,6 +19,11 @@ import (
 var mountCmd = &cobra.Command{
 	Use:   "mount",
 	Short: "Mount a drive",
+	Long: "The mount command lets you mount one or more drives by starting the corresponding systemd service.\n" +
+		"Use 'mount all' to mount all drives at once.\n" +
+		"Use 'mount <drive>' to mount a specific drive.\n" +
+		"Use 'mount <drive1> <drive2>' to mount multiple drives at once.\n" +
+		"You can use tab completion to see all available drives.\n",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
@@ -84,7 +89,11 @@ func mount(cmd *cobra.Command, args []string) {
 var umountCmd = &cobra.Command{
 	Use:   "umount",
 	Short: "Unmount a drive",
-
+	Long: "The umount command lets you umount one or more drives by stopping the corresponding systemd service.\n" +
+		"Use 'umount all' to umount all drives at once.\n" +
+		"Use 'umount <drive>' to umount a specific drive.\n" +
+		"Use 'umount <drive1> <drive2>' to umount multiple drives at once.\n" +
+		"You can use tab completion to see all available drives.\n",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
