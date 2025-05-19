@@ -16,22 +16,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var mountCmd = &cobra.Command{
-	Use:   "mount",
-	Short: "Mount a drive",
-	Long: "The mount command lets you mount one or more drives by starting the corresponding systemd service.\n" +
-		"Use 'mount all' to mount all drives at once.\n" +
-		"Use 'mount <drive>' to mount a specific drive.\n" +
-		"Use 'mount <drive1> <drive2>' to mount multiple drives at once.\n" +
-		"You can use tab completion to see all available drives.\n",
-	CompletionOptions: cobra.CompletionOptions{
-		DisableDefaultCmd: true,
-	},
-	Args:              cobra.MinimumNArgs(1),
-	ValidArgsFunction: availableMountsForArgs,
-	Run:               mount,
-}
-
 func availableMountsForArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	if lo.Contains(args, "all") {
 		return []string{}, cobra.ShellCompDirectiveNoFileComp
@@ -86,22 +70,6 @@ func mount(cmd *cobra.Command, args []string) {
 	}
 }
 
-var umountCmd = &cobra.Command{
-	Use:   "umount",
-	Short: "Unmount a drive",
-	Long: "The umount command lets you umount one or more drives by stopping the corresponding systemd service.\n" +
-		"Use 'umount all' to umount all drives at once.\n" +
-		"Use 'umount <drive>' to umount a specific drive.\n" +
-		"Use 'umount <drive1> <drive2>' to umount multiple drives at once.\n" +
-		"You can use tab completion to see all available drives.\n",
-	CompletionOptions: cobra.CompletionOptions{
-		DisableDefaultCmd: true,
-	},
-	Args:              cobra.MinimumNArgs(1),
-	ValidArgsFunction: availableMountsForArgs,
-	Run:               umount,
-}
-
 func umount(cmd *cobra.Command, args []string) {
 	conn, err := dbus.NewUserConnectionContext(cmd.Context())
 	if err != nil {
@@ -117,27 +85,6 @@ func umount(cmd *cobra.Command, args []string) {
 		}
 		log.Println("Umounted Drive:", arg)
 	}
-}
-
-var listCmdFlags struct {
-	JSON bool
-	YAML bool
-}
-
-func init() {
-	listCmd.Flags().BoolVarP(&listCmdFlags.JSON, "json", "j", false, "Output in JSON format")
-	listCmd.Flags().BoolVarP(&listCmdFlags.YAML, "yaml", "y", false, "Output in YAML format")
-
-	listCmd.MarkFlagsMutuallyExclusive("json", "yaml")
-}
-
-var listCmd = &cobra.Command{
-	Use:   "ls",
-	Short: "List all available mounts and their status",
-	CompletionOptions: cobra.CompletionOptions{
-		DisableDefaultCmd: true,
-	},
-	Run: list,
 }
 
 func list(cmd *cobra.Command, _ []string) {
@@ -246,4 +193,8 @@ func unitNameToDriveName(name string) string {
 	name = strings.Split(name, "@")[1]
 	name = strings.Split(name, ".service")[0]
 	return name
+}
+
+func driveNameToUnitName(name string) string {
+	return fmt.Sprintf("rclone@%s.service", name)
 }

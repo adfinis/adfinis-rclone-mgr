@@ -123,6 +123,20 @@ func TestUnitNameToDriveName(t *testing.T) {
 	}
 }
 
+func TestDriveNameToUnitName(t *testing.T) {
+	for _, test := range []struct {
+		input    string
+		expected string
+	}{
+		{"mydrive", "rclone@mydrive.service"},
+		{"my-drive-1", "rclone@my-drive-1.service"},
+		{"my_drive_xyz", "rclone@my_drive_xyz.service"},
+	} {
+		result := driveNameToUnitName(test.input)
+		assert.Equal(t, test.expected, result)
+	}
+}
+
 func TestStatusesToServiceStatuses(t *testing.T) {
 	for _, test := range []struct {
 		input    []dbus.UnitStatus
