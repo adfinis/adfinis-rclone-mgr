@@ -107,6 +107,7 @@ func openBrowser(url string) {
 	}
 	if err != nil {
 		log.Printf("Failed to open browser: %v", err)
+		log.Printf("Please open the URL manually: %s", url)
 	}
 }
 
