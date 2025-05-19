@@ -4,7 +4,7 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
-const keyringService = "adfinis-rclone-mount"
+const keyringService = "adfinis-rclone-mgr"
 
 func getCredentials() (clientID string, clientSecret string, err error) {
 	clientID, err = keyring.Get(keyringService, "client_id")
