@@ -11,7 +11,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/adrg/xdg"
 	"github.com/spf13/cobra"
 )
 
@@ -131,10 +130,7 @@ Make sure to move the file you just created to another location immediately!
 	title = "Select File Location"
 	message = fmt.Sprintf("Select a new location for the file:\n\n%s", filePath)
 
-	// open the file selector in the "overview" folder with all other drives
-	suggestedPath := path.Join(xdg.Home, "google", path.Base(filePath))
-	fmt.Println(suggestedPath)
-	newFilePath, err := openFileSelector(title, message, suggestedPath)
+	newFilePath, err := openFileSelector(title, message, fileName)
 	if err != nil {
 		if strings.Contains(err.Error(), "exit status 1") {
 			fmt.Println("File selector was cancelled, skipping...")
