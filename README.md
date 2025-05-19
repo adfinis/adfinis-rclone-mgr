@@ -49,7 +49,7 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
    1. Via Desktop: Just search for `adfinis-rclone-mgr`
    2. Via Terminal:
    ```bash
-   adfinis-rclone-mgr
+   adfinis-rclone-mgr gdrive-config
    ```
 2. Open the provided URL in your browser to configure Google Drive mounts.
 3. Follow the on-screen instructions to log in, select drives, and generate configurations.
@@ -58,6 +58,11 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 ### Managing Mounts
 
 You can now manage your Google Drive mounts directly from the terminal using the following commands:
+
+- **List available shares:**
+  ```bash
+  adfinis-rclone-mgr ls
+  ```
 
 - **Mount a configured share:**
   ```bash
