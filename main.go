@@ -52,8 +52,13 @@ var rootCmd = &cobra.Command{
 	Version: Version,
 }
 
+func root(cmd *cobra.Command, _ []string) {
+	cmd.Help()
+}
+
 func init() {
 	rootCmd.AddCommand(
+		gdriveConfigCmd,
 		mountCmd,
 		umountCmd,
 		listCmd,
@@ -61,7 +66,16 @@ func init() {
 	)
 }
 
-func root(cmd *cobra.Command, _ []string) {
+var gdriveConfigCmd = &cobra.Command{
+	Use:   "gdrive-config",
+	Short: "Generate an rclone config for Google Drive",
+	Run:   gdriveConfig,
+	CompletionOptions: cobra.CompletionOptions{
+		HiddenDefaultCmd: true,
+	},
+}
+
+func gdriveConfig(cmd *cobra.Command, _ []string) {
 	ctx, cancel := context.WithCancel(cmd.Context())
 
 	srv := &http.Server{
