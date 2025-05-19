@@ -97,7 +97,7 @@ func TestMoveFile_DestNoWritePermission(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Remove write permission from directory
-	defer os.Chmod(noPermDir, 0755) // restore for cleanup
+	defer os.Chmod(noPermDir, 0755) // nolint:errcheck
 
 	err = moveFile(src, dest)
 	assert.Error(t, err)
