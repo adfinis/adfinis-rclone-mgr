@@ -1,6 +1,11 @@
 # Mounting Google Drive with Rclone  
 > The Adfinis way 🧙✨  
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/adfinis/adfinis-rclone-mount)](https://goreportcard.com/report/github.com/adfinis/adfinis-rclone-mount)
+[![golangci-lint](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/lint.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/lint.yml)
+[![testing](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/test.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/test.yml)
+[![goreleaser](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/release.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/release.yml)
+
 ## 🚀 About the Project
 This repository provides a streamlined way to mount Google Drive using Rclone, tailored for Adfinis workflows. It includes:
 - A web-based configuration tool for Google Drive mounts.
