@@ -61,6 +61,7 @@ nfpms:
     dependencies:
       - rclone
       - nautilus-python
+      - xclip
     conflicts:
       - adfinis-rclone-mount
     contents:

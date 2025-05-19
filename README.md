@@ -10,7 +10,8 @@
 This repository provides a streamlined way to mount Google Drive using Rclone, tailored for Adfinis workflows. It includes:
 - A web-based configuration tool for Google Drive mounts.
 - Systemd service templates for managing Rclone mounts.
-- Nautilus integration for opening files directly in Google Drive.
+- Nautilus integration for opening files directly in Google Drive and copying shareable links.
+- CLI Tool to mount and umount shares
 
 ## 📦 Installation
 
@@ -23,23 +24,34 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 3. Stop nautilus to make sure the new extension gets picked up: `nautilus -q`
 
 ### Manual Installation
-1. Clone the repository:
+1. Install the dependencies
+   ```bash
+   # debian / ubuntu
+   apt install rclone python3-nautilus xclip
+
+   # fedora
+   dnf install rclone nautilus-python xclip
+
+   # arch
+   pacman -S rclone python-nautilus xclip
+   ```
+2. Clone the repository:
    ```bash
    git clone https://github.com/adfinis/adfinis-rclone-mgr.git
    cd adfinis-rclone-mgr
    ```
-2. Build the binary:
+3. Build the binary:
    ```bash
    go build -o adfinis-rclone-mgr .
    ```
-3. Install the assets:
+4. Install the assets:
    ```bash
    sudo cp assets/rclone@.service /usr/lib/systemd/user/
    sudo cp assets/google_drive_opener.py /usr/share/nautilus-python/extensions/
    sudo cp assets/adfinis-rclone-mgr.desktop /usr/share/applications/
    sudo cp assets/adfinis-rclone-mgr.png /usr/share/icons/hicolor/512x512/apps/
    ```
-4. Optional: Autocompletion  
+5. Optional: Autocompletion  
    ```
    ./adfinis-rclone-mgr completion --help
    ```
