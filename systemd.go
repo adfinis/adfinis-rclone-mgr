@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/adfinis/adfinis-rclone-mount/models"
+	"github.com/adfinis/adfinis-rclone-mgr/models"
 	"github.com/adrg/xdg"
 	"github.com/coreos/go-systemd/v22/dbus"
 )

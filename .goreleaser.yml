@@ -17,7 +17,7 @@ builds:
     env:
       - CGO_ENABLED=0
     main: .
-    binary: adfinis-rclone-mount
+    binary: adfinis-rclone-mgr
     ldflags:
       - -s
       - -w
@@ -34,7 +34,7 @@ builds:
 
 archives:
   - id: default
-    name_template: "adfinis-rclone-mount-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
+    name_template: "adfinis-rclone-mgr-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
     ids:
       - default
     wrap_in_directory: true
@@ -48,9 +48,9 @@ checksum:
   name_template: "checksums.txt"
 
 nfpms:
-  - file_name_template: "adfinis-rclone-mount-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
+  - file_name_template: "adfinis-rclone-mgr-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
     vendor: adfinis
-    homepage: "https://github.com/adfinis/adfinis-rclone-mount"
+    homepage: "https://github.com/adfinis/adfinis-rclone-mgr"
     maintainer: "jonahz <jonah.zuercher@adfinis.com>"
     description: "Configure rclone mounts for Google Drive"
     license: "GPLv3"
@@ -61,15 +61,17 @@ nfpms:
     dependencies:
       - rclone
       - nautilus-python
+    conflicts:
+      - adfinis-rclone-mount
     contents:
       - src: ./assets/rclone@.service
         dst: /usr/lib/systemd/user/rclone@.service
       - src: ./assets/google_drive_opener.py
         dst: /usr/share/nautilus-python/extensions/google_drive_opener.py
-      - src: ./assets/adfinis-rclone-mount.desktop
-        dst: /usr/share/applications/adfinis-rclone-mount.desktop
-      - src: ./assets/adfinis-rclone-mount.png
-        dst: /usr/share/icons/hicolor/512x512/apps/adfinis-rclone-mount.png
+      - src: ./assets/adfinis-rclone-mgr.desktop
+        dst: /usr/share/applications/adfinis-rclone-mgr.desktop
+      - src: ./assets/adfinis-rclone-mgr.png
+        dst: /usr/share/icons/hicolor/512x512/apps/adfinis-rclone-mgr.png
       - src: ./completions/{{ .ProjectName }}.bash
         dst: /etc/bash_completion.d/{{ .ProjectName }}
       - src: ./completions/{{ .ProjectName }}.fish

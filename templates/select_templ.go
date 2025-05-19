@@ -9,7 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"github.com/adfinis/adfinis-rclone-mount/models"
+	"github.com/adfinis/adfinis-rclone-mgr/models"
 )
 
 func ComponentDriveSelection(drives []models.Drive) templ.Component {

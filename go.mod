@@ -1,4 +1,4 @@
-module github.com/adfinis/adfinis-rclone-mount
+module github.com/adfinis/adfinis-rclone-mgr
 
 go 1.24.2
 

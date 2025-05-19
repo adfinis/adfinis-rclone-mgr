@@ -1,10 +1,10 @@
 # Mounting Google Drive with Rclone  
 > The Adfinis way 🧙✨  
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/adfinis/adfinis-rclone-mount)](https://goreportcard.com/report/github.com/adfinis/adfinis-rclone-mount)
-[![golangci-lint](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/lint.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/lint.yml)
-[![testing](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/test.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/test.yml)
-[![goreleaser](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/release.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mount/actions/workflows/release.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/adfinis/adfinis-rclone-mgr)](https://goreportcard.com/report/github.com/adfinis/adfinis-rclone-mgr)
+[![golangci-lint](https://github.com/adfinis/adfinis-rclone-mgr/actions/workflows/lint.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mgr/actions/workflows/lint.yml)
+[![testing](https://github.com/adfinis/adfinis-rclone-mgr/actions/workflows/test.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mgr/actions/workflows/test.yml)
+[![goreleaser](https://github.com/adfinis/adfinis-rclone-mgr/actions/workflows/release.yml/badge.svg)](https://github.com/adfinis/adfinis-rclone-mgr/actions/workflows/release.yml)
 
 ## 🚀 About the Project
 This repository provides a streamlined way to mount Google Drive using Rclone, tailored for Adfinis workflows. It includes:
@@ -15,41 +15,41 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 ## 📦 Installation
 
 ### Using GoReleaser Packages
-1. Download the latest release from the [Releases](https://github.com/adfinis/adfinis-rclone-mount/releases) page.
+1. Download the latest release from the [Releases](https://github.com/adfinis/adfinis-rclone-mgr/releases) page.
 2. Install the package for your distribution:
-   - **Debian/Ubuntu**: `sudo apt install adfinis-rclone-mount-<version>.deb`
-   - **Fedora/RHEL**: `sudo dnf install adfinis-rclone-mount-<version>.rpm`
+   - **Debian/Ubuntu**: `sudo apt install adfinis-rclone-mgr-<version>.deb`
+   - **Fedora/RHEL**: `sudo dnf install adfinis-rclone-mgr-<version>.rpm`
    - **Arch Linux**: Use the `.pkg.tar.zst` file with `pacman -U`.
 3. Stop nautilus to make sure the new extension gets picked up: `nautilus -q`
 
 ### Manual Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/adfinis/adfinis-rclone-mount.git
-   cd adfinis-rclone-mount
+   git clone https://github.com/adfinis/adfinis-rclone-mgr.git
+   cd adfinis-rclone-mgr
    ```
 2. Build the binary:
    ```bash
-   go build -o adfinis-rclone-mount .
+   go build -o adfinis-rclone-mgr .
    ```
 3. Install the assets:
    ```bash
    sudo cp assets/rclone@.service /usr/lib/systemd/user/
    sudo cp assets/google_drive_opener.py /usr/share/nautilus-python/extensions/
-   sudo cp assets/adfinis-rclone-mount.desktop /usr/share/applications/
-   sudo cp assets/adfinis-rclone-mount.png /usr/share/icons/hicolor/512x512/apps/
+   sudo cp assets/adfinis-rclone-mgr.desktop /usr/share/applications/
+   sudo cp assets/adfinis-rclone-mgr.png /usr/share/icons/hicolor/512x512/apps/
    ```
 4. Optional: Autocompletion  
    ```
-   ./adfinis-rclone-mount completion --help
+   ./adfinis-rclone-mgr completion --help
    ```
 
 ## 🛠️ Usage
 1. Start the application:
-   1. Via Desktop: Just search for `adfinis-rclone-mount`
+   1. Via Desktop: Just search for `adfinis-rclone-mgr`
    2. Via Terminal:
    ```bash
-   adfinis-rclone-mount
+   adfinis-rclone-mgr
    ```
 2. Open the provided URL in your browser to configure Google Drive mounts.
 3. Follow the on-screen instructions to log in, select drives, and generate configurations.
@@ -61,14 +61,14 @@ You can now manage your Google Drive mounts directly from the terminal using the
 
 - **Mount a configured share:**
   ```bash
-  adfinis-rclone-mount mount <share-name>
+  adfinis-rclone-mgr mount <share-name>
   ```
   Replace `<share-name>` with the name of your configured Google Drive share.  
   You can use tab for autocompletion of the share names.
 
 - **Unmount a share:**
   ```bash
-  adfinis-rclone-mount umount <share-name>
+  adfinis-rclone-mgr umount <share-name>
   ```
   This will safely unmount the specified share.
 

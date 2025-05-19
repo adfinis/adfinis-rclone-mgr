@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/adfinis/adfinis-rclone-mount/models"
-	"github.com/adfinis/adfinis-rclone-mount/templates"
+	"github.com/adfinis/adfinis-rclone-mgr/models"
+	"github.com/adfinis/adfinis-rclone-mgr/templates"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
@@ -43,8 +43,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "adfinis-rclone-mount",
-	Short: "Manage Google Drive mounts using Rclone",
+	Use:   "adfinis-rclone-mgr",
+	Short: "Manage rclone mounts for Google Drive like a champ",
 	Run:   root,
 	CompletionOptions: cobra.CompletionOptions{
 		HiddenDefaultCmd: true,
