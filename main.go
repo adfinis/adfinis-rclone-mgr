@@ -53,7 +53,9 @@ var rootCmd = &cobra.Command{
 }
 
 func root(cmd *cobra.Command, _ []string) {
-	cmd.Help()
+	if err := cmd.Help(); err != nil {
+		log.Fatalln("Failed to show help:", err)
+	}
 }
 
 func init() {
