@@ -155,7 +155,7 @@ func renderTable(statuses []dbus.UnitStatus) {
 		case "active":
 			prefix = "✅"
 		case "failed":
-			prefix = "❌"
+			prefix = "☠️"
 		case "inactive":
 			prefix = "⬜"
 		default:
