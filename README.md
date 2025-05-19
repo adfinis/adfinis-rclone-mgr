@@ -28,13 +28,13 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 1. Install the dependencies
    ```bash
    # debian / ubuntu
-   sudo apt install rclone python3-nautilus xclip
+   sudo apt install rclone python3-nautilus xclip zenity
 
    # fedora / rhel
-   sudo dnf install rclone nautilus-python xclip
+   sudo dnf install rclone nautilus-python xclip zenity
 
    # arch
-   sudo pacman -S rclone python-nautilus xclip
+   sudo pacman -S rclone python-nautilus xclip zenity
    ```
 2. Clone the repository:
    ```bash
