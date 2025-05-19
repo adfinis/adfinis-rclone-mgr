@@ -11,8 +11,8 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 - A web-based configuration tool for Google Drive mounts.
 - Systemd service templates for managing Rclone mounts.
 - Nautilus integration for opening files directly in Google Drive and copying shareable links.
-- CLI Tool to mount and umount shares
-- Better error handling in case of permission errors
+- CLI Tool to mount and umount shares.
+- Better error handling in case of permission errors.
 
 ## 📦 Installation
 
