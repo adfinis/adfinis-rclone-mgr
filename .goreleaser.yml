@@ -52,7 +52,7 @@ nfpms:
     vendor: adfinis
     homepage: "https://github.com/adfinis/adfinis-rclone-mgr"
     maintainer: "jonahz <jonah.zuercher@adfinis.com>"
-    description: "Configure rclone mounts for Google Drive"
+    description: "Configure and manage rclone mounts for Google Drive"
     license: "GPLv3"
     formats:
       - deb
