@@ -59,6 +59,9 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
    ```
 
 ## 🛠️ Usage
+> `adfinis-rclone-mgr` assumes you have your own client_id and client_secret.  
+> Make sure to [create that](https://rclone.org/drive/#making-your-own-client-id) or ask your Google Workspace Admin to provide one.
+
 1. Start the application:
    1. Via Desktop: Just search for `adfinis-rclone-mgr`
    2. Via Terminal:
