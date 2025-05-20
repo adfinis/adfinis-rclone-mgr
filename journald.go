@@ -102,8 +102,17 @@ func startJournalReader(ctx context.Context, name string) (<-chan LogEntry, <-ch
 	return logs, errs
 }
 
-func handleLogEntry(entry LogEntry, driveName string) {
+func shouldTriggerError(entry LogEntry) bool {
+	// anything that doesnt contain "insufficientParentPermissions" can be ignored
 	if !strings.Contains(entry.Message, "insufficientParentPermissions") {
+		return false
+	}
+	// only send an error if something from the cache cant be uploaded
+	return strings.Contains(entry.Message, "vfs cache: failed to upload")
+}
+
+func handleLogEntry(entry LogEntry, driveName string) {
+	if !shouldTriggerError(entry) {
 		return
 	}
 
