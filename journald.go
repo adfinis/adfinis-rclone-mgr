@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -111,12 +112,23 @@ func shouldTriggerError(entry LogEntry) bool {
 	return strings.Contains(entry.Message, "vfs cache: failed to upload")
 }
 
+var fileNameRegex = regexp.MustCompile(`ERROR\s+:\s+(.+?):\s`)
+
+func fileNameFromEntry(entry LogEntry) string {
+	s := fileNameRegex.FindStringSubmatch(entry.Message)
+	if len(s) < 2 {
+		return ""
+	}
+	fmt.Println(s)
+	return s[1]
+}
+
 func handleLogEntry(entry LogEntry, driveName string) {
 	if !shouldTriggerError(entry) {
 		return
 	}
 
-	fileName := strings.TrimSpace(strings.SplitN(entry.Message, ":", 3)[1])
+	fileName := fileNameFromEntry(entry)
 	filePath := fileNameToPath(driveName, fileName)
 
 	// make sure file still exists

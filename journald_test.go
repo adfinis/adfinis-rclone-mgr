@@ -146,3 +146,30 @@ func TestShouldTriggerError(t *testing.T) {
 		assert.Equalf(t, tt.want, got, "%s: shouldTriggerError() = %v, want %v", tt.name, got, tt.want)
 	}
 }
+
+func TestFileNameFromEntry(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		message string
+	}{
+		{
+			name:    "test",
+			message: "ERROR : test: vfs cache: failed to upload try #3, will retry in 40s: vfs cache: failed to transfer file from cache to remote: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+		},
+		{
+			name:    "/",
+			message: "ERROR : /: Dir.Mkdir failed to create directory: failed to make directory: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+		},
+		{
+			name:    "blatest.test",
+			message: "Mai 21 11:26:12 psigma rclone[270244]: 2025/05/21 11:26:12 ERROR : blatest.test: vfs cache: failed to upload try #4, will retry in 1m20s: vfs cache: failed to transfer file from cache to remote: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+		},
+		{
+			name:    "",
+			message: "something anything nothing",
+		},
+	} {
+		n := fileNameFromEntry(LogEntry{Message: test.message})
+		assert.Equal(t, test.name, n)
+	}
+}
