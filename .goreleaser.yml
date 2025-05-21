@@ -85,10 +85,16 @@ nfpms:
     overrides:
       archlinux:
         dependencies:
+          - rclone
           - python-nautilus
+          - xclip
+          - zenity
       deb:
         dependencies:
+          - rclone
           - python3-nautilus
+          - xclip
+          - zenity
 
 snapshot:
   version_template: "{{ incpatch .Version }}-devel"
