@@ -103,13 +103,24 @@ func startJournalReader(ctx context.Context, name string) (<-chan LogEntry, <-ch
 	return logs, errs
 }
 
+var ignoredErrors = []string{
+	"Failed to copy: googleapi: Error 403", // occurs when trying to copy a file without permissions
+	"failed to create directory",           // occurs when trying to create a directory without permissions
+	"failed to make directory",             // occurs when trying to create a directory without permissions
+}
+
 func shouldTriggerError(entry LogEntry) bool {
-	// anything that doesnt contain "insufficientParentPermissions" can be ignored
-	if !strings.Contains(entry.Message, "insufficientParentPermissions") {
+	// anything that doesnt contain "ERROR" can be ignored
+	if !strings.Contains(entry.Message, "ERROR") {
 		return false
 	}
-	// only send an error if something from the cache cant be uploaded
-	return strings.Contains(entry.Message, "vfs cache: failed to upload")
+
+	for _, ie := range ignoredErrors {
+		if strings.Contains(entry.Message, ie) {
+			return false
+		}
+	}
+	return true
 }
 
 var fileNameRegex = regexp.MustCompile(`ERROR\s+:\s+(.+?):\s`)
@@ -123,11 +134,32 @@ func fileNameFromEntry(entry LogEntry) string {
 	return s[1]
 }
 
+func shouldTriggerFileMove(entry LogEntry) bool {
+	return strings.Contains(entry.Message, "vfs cache: failed to upload") &&
+		strings.Contains(entry.Message, "insufficientParentPermissions")
+}
+
 func handleLogEntry(entry LogEntry, driveName string) {
 	if !shouldTriggerError(entry) {
 		return
 	}
 
+	// ask user to move file
+	if shouldTriggerFileMove(entry) {
+		requestFileMove(entry, driveName)
+		return
+	}
+
+	// just send a notification
+	title := fmt.Sprintf("Drive Error: %s", driveName)
+	message := fmt.Sprintf("The following error occurred:\n\n%s", entry.Message)
+	if err := sendDesktopNotificationError(title, message); err != nil {
+		fmt.Printf("Failed to send notification: %v\n", err)
+	}
+	return
+}
+
+func requestFileMove(entry LogEntry, driveName string) {
 	fileName := fileNameFromEntry(entry)
 	filePath := fileNameToPath(driveName, fileName)
 

@@ -131,12 +131,12 @@ func TestShouldTriggerError(t *testing.T) {
 		{
 			name:    "vfs cache upload error without insufficientParentPermissions",
 			message: "ERROR : test: vfs cache: failed to upload try #3, will retry in 40s: vfs cache: failed to transfer file from cache to remote: some other error",
-			want:    false,
+			want:    true,
 		},
 		{
 			name:    "random error",
 			message: "ERROR : something else",
-			want:    false,
+			want:    true,
 		},
 	}
 
@@ -171,5 +171,30 @@ func TestFileNameFromEntry(t *testing.T) {
 	} {
 		n := fileNameFromEntry(LogEntry{Message: test.message})
 		assert.Equal(t, test.name, n)
+	}
+}
+
+func TestShouldTriggerFileMove(t *testing.T) {
+	tests := []struct {
+		name    string
+		message string
+		want    bool
+	}{
+		{
+			name:    "vfs cache upload error with insufficientParentPermissions",
+			message: "ERROR : test: vfs cache: failed to upload try #3, will retry in 40s: vfs cache: failed to transfer file from cache to remote: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+			want:    true,
+		},
+		{
+			name:    "random error",
+			message: "ERROR : something else",
+			want:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		entry := LogEntry{Message: tt.message}
+		got := shouldTriggerFileMove(entry)
+		assert.Equalf(t, tt.want, got, "%s: shouldTriggerFileMove() = %v, want %v", tt.name, got, tt.want)
 	}
 }
