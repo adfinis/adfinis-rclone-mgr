@@ -92,6 +92,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
     def _copy_to_clipboard(self, text):
         try:
             subprocess.run(["xclip", "-selection", "clipboard"], input=text.encode())
+            subprocess.run(["xclip", "-selection", "primary"], input=text.encode())
         except Exception as e:
             print(f"Clipboard copy failed: {e}")
 
