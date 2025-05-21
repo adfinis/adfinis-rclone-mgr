@@ -129,7 +129,6 @@ func fileNameFromEntry(entry LogEntry) string {
 	if len(s) < 2 {
 		return ""
 	}
-	fmt.Println(s)
 	return s[1]
 }
 
@@ -140,6 +139,7 @@ func shouldTriggerFileMove(entry LogEntry) bool {
 
 func handleLogEntry(entry LogEntry, driveName string) {
 	if !shouldTriggerError(entry) {
+		fmt.Println("Ignoring log entry:", entry.Message)
 		return
 	}
 
@@ -155,6 +155,8 @@ func handleLogEntry(entry LogEntry, driveName string) {
 	if err := sendDesktopNotificationError(title, message); err != nil {
 		fmt.Printf("Failed to send notification: %v\n", err)
 	}
+
+	fmt.Println("Notified about error:", entry.Message)
 }
 
 func requestFileMove(entry LogEntry, driveName string) {
