@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path"
 	"regexp"
 	"strings"
 
@@ -173,7 +172,7 @@ func requestFileMove(entry LogEntry, driveName string) {
 - %s
 
 Make sure to move the file you just created to another location immediately!
-			`, path.Join(getDriveDataPath(driveName), filePath))
+			`, getDriveDataPath(driveName))
 	if err := sendDesktopNotificationError(title, message); err != nil {
 		fmt.Printf("Failed to send notification: %v\n", err)
 	}
