@@ -156,7 +156,6 @@ func handleLogEntry(entry LogEntry, driveName string) {
 	if err := sendDesktopNotificationError(title, message); err != nil {
 		fmt.Printf("Failed to send notification: %v\n", err)
 	}
-	return
 }
 
 func requestFileMove(entry LogEntry, driveName string) {
