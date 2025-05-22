@@ -21,7 +21,7 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 2. Install the package for your distribution:
    - **Debian/Ubuntu**: `sudo apt install adfinis-rclone-mgr-<version>.deb`
    - **Fedora/RHEL**: `sudo dnf install adfinis-rclone-mgr-<version>.rpm`
-   - **Arch Linux**: `sudo pacman -U adfinis-rclone-mgr-<version>.pkg.tar.zst`.
+   - **Arch Linux (AUR)**: `yay -S adfinis-rclone-mgr-bin`.
 3. Stop nautilus to make sure the new extension gets picked up: `nautilus -q`
 
 ### Manual Installation
