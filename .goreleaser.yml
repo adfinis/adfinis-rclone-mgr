@@ -109,6 +109,7 @@ aurs:
     private_key: "{{ .Env.AUR_KEY }}"
     git_url: "ssh://aur@aur.archlinux.org/adfinis-rclone-mgr-bin.git"
     package: |-
+      cd ./{{ .ProjectName }}-v{{ .Version }}-linux-amd64
       # bin
       install -Dm755 "./{{ .ProjectName }}" "${pkgdir}/usr/bin/{{ .ProjectName }}"
       # license
