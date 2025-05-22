@@ -26,7 +26,7 @@ func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, cl
 		if drive.Enabled {
 			var configMap rc.Params
 			// special case for personal drive
-			if drive.ID == "my_drive" {
+			if drive.ID == "my_drive" || drive.ID == "shared_with_me" {
 				configMap = rc.Params{
 					"type":           "drive",
 					"root_folder_id": "",

@@ -70,6 +70,8 @@ nfpms:
         dst: /usr/lib/systemd/user/adfinis-rclone-mgr@.service
       - src: ./assets/rclone@.service
         dst: /usr/lib/systemd/user/rclone@.service
+      - src: ./assets/adfinis-rclone-wrapper.sh
+        dst: /usr/bin/adfinis-rclone-wrapper.sh
       - src: ./assets/google_drive_opener.py
         dst: /usr/share/nautilus-python/extensions/google_drive_opener.py
       - src: ./assets/adfinis-rclone-mgr.desktop

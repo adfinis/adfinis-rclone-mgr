@@ -52,52 +52,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
 
         return items
 
-    def open_rclone_url(self, menu, file_paths):
-        for file_path in file_paths:
-            try:
-                relative_path = os.path.relpath(file_path, self.RCLONE_MOUNT_PATH)
-                drive_name = relative_path.split(os.sep)[0]
-                # remove drive_name and the last part of the path
-                file_path = os.path.join("", *relative_path.split(os.sep)[1:-1])
-                file_name = os.path.basename(relative_path)
-
-                cmd = ['rclone', 'lsjson', f'{drive_name}:{file_path}']
-                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-                files = json.loads(result.stdout)
-
-                if not files:
-                    raise FileNotFoundError("No files returned from rclone lsjson")
-
-                # find matching file by name
-                files = [f for f in files if f['Path'] == file_name]
-                if not files:
-                    raise FileNotFoundError(f"File '{file_name}' not found in Google Drive")
-                
-                # assuming the first file is the one we want
-                file = files[0]
-                file_id = file['ID']
-
-                # send warning if file is open document format
-                if file['MimeType'] in self.OPENDOCUMENT_FORMATS:
-                    subprocess.Popen(["zenity", "--warning", "--text", "You are about to open an Open Document Format file.\n\nOpening this with Google Docs will create a copy of the file!"])
-
-                url = f'https://drive.google.com/open?id={file_id}'
-                webbrowser.get("xdg-open").open(url)
-
-            except subprocess.CalledProcessError as e:
-                subprocess.Popen(["zenity", "--error", "--text", f"rclone failed:\n{e.stderr}"])
-            except Exception as e:
-                subprocess.Popen(["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"])
-
-    def _copy_to_clipboard(self, text):
-        try:
-            subprocess.run(["xclip", "-selection", "clipboard"], input=text.encode())
-            subprocess.run(["xclip", "-selection", "primary"], input=text.encode())
-        except Exception as e:
-            print(f"Clipboard copy failed: {e}")
-
-    def copy_file_link(self, menu, file_paths):
-        file_path = file_paths[0]
+    def _get_rclone_file(self, file_path):
         try:
             relative_path = os.path.relpath(file_path, self.RCLONE_MOUNT_PATH)
             drive_name = relative_path.split(os.sep)[0]
@@ -106,6 +61,10 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
             file_name = os.path.basename(relative_path)
 
             cmd = ['rclone', 'lsjson', f'{drive_name}:{file_path}']
+            # special case for shared_with_me
+            if drive_name.lower() == "shared_with_me":
+                cmd.append('--drive-shared-with-me')
+
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             files = json.loads(result.stdout)
 
@@ -119,12 +78,42 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
 
             # assuming the first file is the one we want
             file = files[0]
-            file_id = file['ID']
-
-            url = f'https://drive.google.com/open?id={file_id}'
-            self._copy_to_clipboard(url)
+            return file
 
         except subprocess.CalledProcessError as e:
             subprocess.Popen(["zenity", "--error", "--text", f"rclone failed:\n{e.stderr}"])
+        except Exception as e:
+            subprocess.Popen(["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"])
+
+    def open_rclone_url(self, menu, file_paths):
+        for file_path in file_paths:
+            try:
+                file = self._get_rclone_file(file_path)
+                file_id = file['ID']
+
+                # send warning if file is open document format
+                if file['MimeType'] in self.OPENDOCUMENT_FORMATS:
+                    subprocess.Popen(["zenity", "--warning", "--text", "You are about to open an Open Document Format file.\n\nOpening this with Google Docs will create a copy of the file!"])
+
+                url = f'https://drive.google.com/open?id={file_id}'
+                webbrowser.get("xdg-open").open(url)
+
+            except Exception as e:
+                subprocess.Popen(["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"])
+
+    def _copy_to_clipboard(self, text):
+        try:
+            subprocess.run(["xclip", "-selection", "clipboard"], input=text.encode())
+            subprocess.run(["xclip", "-selection", "primary"], input=text.encode())
+        except Exception as e:
+            print(f"Clipboard copy failed: {e}")
+
+    def copy_file_link(self, menu, file_paths):
+        file_path = file_paths[0]
+        try:
+            file = self._get_rclone_file(file_path)
+            file_id = file['ID']
+            url = f'https://drive.google.com/open?id={file_id}'
+            self._copy_to_clipboard(url)
         except Exception as e:
             subprocess.Popen(["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"])

@@ -251,8 +251,6 @@ func newHttpHandler(ctx context.Context, cancel context.CancelFunc) *http.ServeM
 			})
 		}
 
-		fmt.Println(result)
-
 		if err := handleRcloneConfig(ctx, result, clientID, clientSecret, string(tokenValue)); err != nil {
 			log.Printf("Failed to handle rclone config: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -297,6 +295,10 @@ func checkAvailableDrives(ctx context.Context, oauthConfig *oauth2.Config, token
 		{
 			Name: "My Drive",
 			ID:   "my_drive",
+		},
+		{
+			Name: "Shared With Me",
+			ID:   "shared_with_me",
 		},
 	}
 	pageToken := ""
