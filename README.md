@@ -108,6 +108,14 @@ If you make any changes to a `.templ` file, don't forget to generate a native go
 go tool templ generate
 ```
 
+To create a release, simply push a tag and the pipeline will do the rest.  
+[Semantic versioning](https://semver.org/) and [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) are a must!
+
+```
+git tag vX.Y.Z
+git push --tags
+```
+
 ## 📜 License
 This project is licensed under the [GNU General Public License v3.0](./LICENSE).  
 You are free to use, modify, and distribute this software under the terms of the license.
