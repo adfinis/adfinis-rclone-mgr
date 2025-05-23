@@ -39,6 +39,7 @@ archives:
       - default
     wrap_in_directory: true
     files:
+      - assets/*
       - LICENSE
       - README.md
       - completions/*
