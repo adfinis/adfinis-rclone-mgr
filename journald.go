@@ -102,19 +102,31 @@ func startJournalReader(ctx context.Context, name string) (<-chan LogEntry, <-ch
 	return logs, errs
 }
 
-var ignoredErrors = []string{
-	"Failed to copy: googleapi: Error 403", // occurs when trying to copy a file without permissions
-	"failed to create directory",           // occurs when trying to create a directory without permissions
-	"failed to make directory",             // occurs when trying to create a directory without permissions
+var ignoredErrorsByDrive = map[string][]string{
+	"shared_with_me": {
+		"ERROR : IO error: open file failed: googleapi: Error 403: This file cannot be downloaded by the user., cannotDownloadFile", // weird error on shared_with_me
+	},
+	"all": {
+		"Failed to copy: googleapi: Error 403", // occurs when trying to copy a file without permissions
+		"failed to create directory",           // occurs when trying to create a directory without permissions
+		"failed to make directory",             // occurs when trying to create a directory without permissions
+	},
 }
 
-func shouldTriggerError(entry LogEntry) bool {
+func shouldTriggerError(entry LogEntry, driveName string) bool {
 	// anything that doesnt contain "ERROR" can be ignored
 	if !strings.Contains(entry.Message, "ERROR") {
 		return false
 	}
 
-	for _, ie := range ignoredErrors {
+	allIgnoredErrs := make([]string, 0)
+	ignoredErrs, ok := ignoredErrorsByDrive[strings.ToLower(driveName)]
+	if ok {
+		allIgnoredErrs = append(allIgnoredErrs, ignoredErrs...)
+	}
+	allIgnoredErrs = append(allIgnoredErrs, ignoredErrorsByDrive["all"]...)
+
+	for _, ie := range allIgnoredErrs {
 		if strings.Contains(entry.Message, ie) {
 			return false
 		}
@@ -138,7 +150,7 @@ func shouldTriggerFileMove(entry LogEntry) bool {
 }
 
 func handleLogEntry(entry LogEntry, driveName string) {
-	if !shouldTriggerError(entry) {
+	if !shouldTriggerError(entry, driveName) {
 		fmt.Println("Ignoring log entry:", entry.Message)
 		return
 	}

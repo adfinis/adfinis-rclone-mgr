@@ -105,45 +105,64 @@ func TestMoveFile_DestNoWritePermission(t *testing.T) {
 func TestShouldTriggerError(t *testing.T) {
 	tests := []struct {
 		name    string
+		drive   string
 		message string
 		want    bool
 	}{
 		{
 			name:    "copy error with insufficientParentPermissions",
 			message: "ERROR : test: Failed to copy: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+			drive:   "my_drive",
 			want:    false,
 		},
 		{
 			name:    "vfs cache upload error with insufficientParentPermissions",
 			message: "ERROR : test: vfs cache: failed to upload try #3, will retry in 40s: vfs cache: failed to transfer file from cache to remote: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+			drive:   "my_drive",
 			want:    true,
 		},
 		{
 			name:    "make directory error with insufficientParentPermissions",
 			message: "ERROR : IO error: failed to make directory: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+			drive:   "my_drive",
 			want:    false,
 		},
 		{
 			name:    "mkdir failed to create directory with insufficientParentPermissions",
 			message: "ERROR : /: Dir.Mkdir failed to create directory: failed to make directory: googleapi: Error 403: Insufficient permissions for the specified parent., insufficientParentPermissions",
+			drive:   "my_drive",
 			want:    false,
 		},
 		{
 			name:    "vfs cache upload error without insufficientParentPermissions",
 			message: "ERROR : test: vfs cache: failed to upload try #3, will retry in 40s: vfs cache: failed to transfer file from cache to remote: some other error",
+			drive:   "my_drive",
 			want:    true,
+		},
+		{
+			name:    "io error with cannotDownloadFile",
+			message: "ERROR : IO error: open file failed: googleapi: Error 403: This file cannot be downloaded by the user., cannotDownloadFile",
+			drive:   "my_drive",
+			want:    true,
+		},
+		{
+			name:    "io error with cannotDownloadFile",
+			message: "ERROR : IO error: open file failed: googleapi: Error 403: This file cannot be downloaded by the user., cannotDownloadFile",
+			drive:   "shared_with_me",
+			want:    false,
 		},
 		{
 			name:    "random error",
 			message: "ERROR : something else",
+			drive:   "my_drive",
 			want:    true,
 		},
 	}
 
 	for _, tt := range tests {
 		entry := LogEntry{Message: tt.message}
-		got := shouldTriggerError(entry)
-		assert.Equalf(t, tt.want, got, "%s: shouldTriggerError() = %v, want %v", tt.name, got, tt.want)
+		got := shouldTriggerError(entry, tt.drive)
+		assert.Equalf(t, tt.want, got, "%s (%s): shouldTriggerError() = %v, want %v", tt.name, tt.drive, got, tt.want)
 	}
 }
 
