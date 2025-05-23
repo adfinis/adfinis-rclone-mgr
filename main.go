@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	mcobra "github.com/muesli/mango-cobra"
+	"github.com/muesli/roff"
 	"github.com/spf13/cobra"
 )
 
@@ -22,6 +24,9 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "adfinis-rclone-mgr",
 	Short: "Manage rclone mounts for Google Drive like a champ",
+	Long: "adfinis-rclone-mgr is a command line tool to manage rclone mounts for Google Drive.\n" +
+		"It provides commands to mount, unmount, list, and configure Google Drive mounts.\n" +
+		"It also provides a daemon to read error logs from systemd journal and send desktop notifications based on them.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := cmd.Help(); err != nil {
 			log.Fatalln("Failed to show help:", err)
@@ -41,13 +46,19 @@ func init() {
 		listCmd,
 		journaldReaderCmd,
 		versionCmd,
+		manCmd,
 	)
 }
 
 var gdriveConfigCmd = &cobra.Command{
 	Use:   "gdrive-config",
 	Short: "Generate an rclone config for Google Drive",
-	Run:   gdriveConfig,
+	Long: "The gdrive-config command generates an rclone config for Google Drive.\n" +
+		"It will open a browser window to authenticate with Google Drive.\n" +
+		"After authentication, it will generate a config file for rclone.\n" +
+		"The config file will be saved in the default location for rclone configs (~/.config/rclone/rclone.conf).\n" +
+		"Existing rclone remotes won't be overwritten unless the name conflicts with the name of a Google Drive.\n",
+	Run: gdriveConfig,
 	CompletionOptions: cobra.CompletionOptions{
 		HiddenDefaultCmd: true,
 	},
@@ -105,7 +116,7 @@ var listCmd = &cobra.Command{
 
 var journaldReaderCmd = &cobra.Command{
 	Use:   "journald-reader",
-	Short: "Read logs from systemd journal and send desktop notifications based on them",
+	Short: "Daemon to read logs from systemd journal",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
@@ -116,12 +127,29 @@ var journaldReaderCmd = &cobra.Command{
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version info",
+	Short: "Print the version details",
 	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Printf("Version: %s\n", Version)
 		fmt.Printf("Commit: %s\n", Commit)
 		fmt.Printf("Date: %s\n", Date)
 		fmt.Printf("BuiltBy: %s\n", BuiltBy)
+	},
+}
+
+var manCmd = &cobra.Command{
+	Use:                   "man",
+	Short:                 "generates the manpages",
+	SilenceUsage:          true,
+	DisableFlagsInUseLine: true,
+	Hidden:                true,
+	Args:                  cobra.NoArgs,
+	RunE: func(_ *cobra.Command, _ []string) error {
+		manPage, err := mcobra.NewManPage(1, rootCmd)
+		if err != nil {
+			return err
+		}
+		_, err = fmt.Fprint(os.Stdout, manPage.Build(roff.NewDocument()))
+		return err
 	},
 }
 
