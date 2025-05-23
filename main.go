@@ -80,6 +80,14 @@ var mountCmd = &cobra.Command{
 	Run:               mount,
 }
 
+var umountCmdFlags struct {
+	Force bool
+}
+
+func init() {
+	umountCmd.Flags().BoolVarP(&umountCmdFlags.Force, "force", "f", false, "Force unmount the drive(s)")
+}
+
 var umountCmd = &cobra.Command{
 	Use:   "umount",
 	Short: "Unmount a drive",

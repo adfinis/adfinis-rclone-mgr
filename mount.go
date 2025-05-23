@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
@@ -83,7 +84,19 @@ func umount(cmd *cobra.Command, args []string) {
 			continue
 		}
 		log.Println("Umounted Drive:", arg)
+
+		if umountCmdFlags.Force {
+			forceUmount(cmd.Context(), arg)
+		}
 	}
+}
+
+// forceUmount calls fusermount -u to force unmount the drive in addition to stopping the systemd service.
+// This doesnt always work, but it is a good last resort.
+// Errors are always ignored, as fusermount -u will return an error if the drive is not mounted.
+func forceUmount(ctx context.Context, driveName string) {
+	drivePath := getDriveDataPath(driveName)
+	exec.CommandContext(ctx, "/bin/fusermount", "-u", drivePath).Run() //nolint:errcheck
 }
 
 func list(cmd *cobra.Command, _ []string) {
