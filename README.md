@@ -96,6 +96,18 @@ You can now manage your Google Drive mounts directly from the terminal using the
 
 These commands allow you to quickly mount or unmount your Google Drive shares as needed.
 
+## 🧪 Development
+Make sure to install all dependencies:
+```
+go mod tidy
+```
+
+If you make any changes to a `.templ` file, don't forget to generate a native go code based on the template:
+
+```
+go tool templ generate
+```
+
 ## 📜 License
 This project is licensed under the [GNU General Public License v3.0](./LICENSE).  
 You are free to use, modify, and distribute this software under the terms of the license.
