@@ -96,6 +96,10 @@ You can now manage your Google Drive mounts directly from the terminal using the
 
 These commands allow you to quickly mount or unmount your Google Drive shares as needed.
 
+## 🐞 Troubleshooting
+If there are still pending io operations on a share, or if you have a Drive folder open in your file manager, unmounting a share might fail.  
+In that case, make sure to close all open files and file manager windows and execute `adfinis-rclone-mgr umount <share-name> --force` or `fusermount -u ~/google/<share-name>`.
+
 ## 🧪 Development
 Make sure to install all dependencies:
 ```
