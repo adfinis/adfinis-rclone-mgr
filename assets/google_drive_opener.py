@@ -61,10 +61,6 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
             file_name = os.path.basename(relative_path)
 
             cmd = ['rclone', 'lsjson', f'{drive_name}:{file_path}']
-            # special case for shared_with_me
-            if drive_name.lower() == "shared_with_me":
-                cmd.append('--drive-shared-with-me')
-
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             files = json.loads(result.stdout)
 
