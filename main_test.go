@@ -26,6 +26,7 @@ func TestRootCmd_HasSubcommands(t *testing.T) {
 		"ls",
 		"journald-reader",
 		"version",
+		"man",
 	}
 	for _, name := range expected {
 		assert.Contains(t, subNames, name)
@@ -38,7 +39,7 @@ func TestRootCmd_HelpOutput(t *testing.T) {
 	rootCmd.SetArgs([]string{})
 	_ = rootCmd.Execute()
 	out := buf.String()
-	assert.Contains(t, out, "Manage rclone mounts")
+	assert.Contains(t, out, "adfinis-rclone-mgr is a command line tool to manage rclone mounts for Google Drive")
 	assert.Contains(t, out, "Usage:")
 	assert.Contains(t, out, "Available Commands:")
 }
