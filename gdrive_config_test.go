@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHttpHandlerRoot(t *testing.T) {
@@ -15,9 +17,7 @@ func TestHttpHandlerRoot(t *testing.T) {
 	rw := httptest.NewRecorder()
 
 	h.ServeHTTP(rw, req)
-	if rw.Code != http.StatusOK {
-		t.Errorf("expected 200 OK, got %d", rw.Code)
-	}
+	assert.Equal(t, http.StatusOK, rw.Code)
 }
 
 func TestHttpHandlerLoginMissingFields(t *testing.T) {
@@ -27,9 +27,7 @@ func TestHttpHandlerLoginMissingFields(t *testing.T) {
 	rw := httptest.NewRecorder()
 
 	h.ServeHTTP(rw, req)
-	if rw.Code != http.StatusBadRequest {
-		t.Errorf("expected 400 Bad Request, got %d", rw.Code)
-	}
+	assert.Equal(t, http.StatusBadRequest, rw.Code)
 }
 
 func TestHttpHandlerAuthInvalidState(t *testing.T) {
@@ -38,9 +36,7 @@ func TestHttpHandlerAuthInvalidState(t *testing.T) {
 	rw := httptest.NewRecorder()
 
 	h.ServeHTTP(rw, req)
-	if rw.Code != http.StatusBadRequest {
-		t.Errorf("expected 400 Bad Request, got %d", rw.Code)
-	}
+	assert.Equal(t, http.StatusBadRequest, rw.Code)
 }
 
 func TestHttpHandlerGenerateMissingToken(t *testing.T) {
@@ -49,9 +45,7 @@ func TestHttpHandlerGenerateMissingToken(t *testing.T) {
 	rw := httptest.NewRecorder()
 
 	h.ServeHTTP(rw, req)
-	if rw.Code != http.StatusBadRequest {
-		t.Errorf("expected 400 Bad Request, got %d", rw.Code)
-	}
+	assert.Equal(t, http.StatusBadRequest, rw.Code)
 }
 
 func TestHttpHandlerGenerateMissingOidc(t *testing.T) {
@@ -61,7 +55,5 @@ func TestHttpHandlerGenerateMissingOidc(t *testing.T) {
 	rw := httptest.NewRecorder()
 
 	h.ServeHTTP(rw, req)
-	if rw.Code != http.StatusBadRequest {
-		t.Errorf("expected 400 Bad Request, got %d", rw.Code)
-	}
+	assert.Equal(t, http.StatusBadRequest, rw.Code)
 }
