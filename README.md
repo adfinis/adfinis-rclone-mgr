@@ -49,7 +49,6 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
    ```bash
    sudo cp assets/rclone@.service /usr/lib/systemd/user/
    sudo cp assets/adfinis-rclone-mgr@.service /usr/lib/systemd/user/
-   sudo cp assets/adfinis-rclone-wrapper.sh /usr/bin/
    sudo cp assets/google_drive_opener.py /usr/share/nautilus-python/extensions/
    sudo cp assets/adfinis-rclone-mgr.desktop /usr/share/applications/
    sudo cp assets/adfinis-rclone-mgr.png /usr/share/icons/hicolor/512x512/apps/
