@@ -78,6 +78,8 @@ nfpms:
         dst: /usr/share/applications/adfinis-rclone-mgr.desktop
       - src: ./assets/adfinis-rclone-mgr.png
         dst: /usr/share/icons/hicolor/512x512/apps/adfinis-rclone-mgr.png
+      - src: ./assets/file-exclude-list.txt
+        dst: /usr/share/{{ .ProjectName }}/file-exclude-list.txt
       - src: ./completions/{{ .ProjectName }}.bash
         dst: /etc/bash_completion.d/{{ .ProjectName }}
       - src: ./completions/{{ .ProjectName }}.fish
@@ -123,6 +125,9 @@ aurs:
       # desktop integration
       install -Dm644 "./assets/adfinis-rclone-mgr.desktop" "${pkgdir}/usr/share/applications/adfinis-rclone-mgr.desktop"
       install -Dm644 "./assets/adfinis-rclone-mgr.png" "${pkgdir}/usr/share/icons/hicolor/512x512/apps/adfinis-rclone-mgr.png"
+      # file exclude list
+      mkdir -p "${pkgdir}/usr/share/{{ .ProjectName }}/"
+      install -Dm644 "./assets/file-exclude-list.txt" "${pkgdir}/usr/share/{{ .ProjectName }}/file-exclude-list.txt"
       # completions
       mkdir -p "${pkgdir}/usr/share/bash-completion/completions/"
       mkdir -p "${pkgdir}/usr/share/zsh/site-functions/"

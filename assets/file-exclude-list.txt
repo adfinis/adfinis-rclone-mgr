@@ -1,0 +1,6 @@
+**.DS_Store
+.directory
+Thumbs**.db**
+.Trash**
+.Trash-1000**
+.~lock.**

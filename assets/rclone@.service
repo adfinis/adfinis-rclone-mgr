@@ -12,6 +12,7 @@ ExecStart=/usr/bin/rclone mount \
     --cache-dir "%h/.cache/google/%I" \
     --vfs-cache-mode writes \
     --vfs-cache-max-size 10G \
+    --exclude-from /usr/share/adfinis-rclone-mgr/file-exclude-list.txt \
     "%I:" "%h/google/%I"
 ExecStop=/bin/fusermount -u "%h/google/%I"
 
