@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/adfinis/adfinis-rclone-mgr/models"
+	"github.com/adfinis/adfinis-rclone-mgr/v2/models"
 	"github.com/coreos/go-systemd/v22/dbus"
 )
 

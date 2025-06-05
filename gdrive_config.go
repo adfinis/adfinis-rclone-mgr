@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/adfinis/adfinis-rclone-mgr/models"
-	"github.com/adfinis/adfinis-rclone-mgr/templates"
+	"github.com/adfinis/adfinis-rclone-mgr/v2/models"
+	"github.com/adfinis/adfinis-rclone-mgr/v2/templates"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"

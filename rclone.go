@@ -6,7 +6,7 @@ import (
 
 	"log"
 
-	"github.com/adfinis/adfinis-rclone-mgr/models"
+	"github.com/adfinis/adfinis-rclone-mgr/v2/models"
 	"github.com/rclone/rclone/fs/config"
 	"github.com/rclone/rclone/fs/config/configfile"
 	"github.com/rclone/rclone/fs/rc"
