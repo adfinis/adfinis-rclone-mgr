@@ -3,6 +3,7 @@ import os
 import subprocess
 import webbrowser
 import json
+import threading
 
 """
 This extension adds a context menu item to Nautilus for opening files in Google Drive.
@@ -10,6 +11,7 @@ It generates a public link using rclone and opens it in the default web browser.
 
 The extension expects rclone to mount the drives at ~/google/$drive_name.
 """
+
 
 class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
     RCLONE_MOUNT_PATH = os.path.expanduser("~/google")
@@ -40,6 +42,14 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
         open_google_drive_item.connect("activate", self.open_rclone_url, file_paths)
         items.append(open_google_drive_item)
 
+        copy_file_item = Nautilus.MenuItem(
+            name="GoogleDriveOpener::CopyFile",
+            label="Copy on Google Drive",
+            tip="Copy Files or Folders on Google Drive",
+        )
+        copy_file_item.connect("activate", self._copy_file, file_paths)
+        items.append(copy_file_item)
+
         # add copy button if only one file is selected
         if len(file_paths) == 1:
             copy_file_link_item = Nautilus.MenuItem(
@@ -60,7 +70,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
             file_path = os.path.join("", *relative_path.split(os.sep)[1:-1])
             file_name = os.path.basename(relative_path)
 
-            cmd = ['rclone', 'lsjson', f'{drive_name}:{file_path}']
+            cmd = ["rclone", "lsjson", f"{drive_name}:{file_path}"]
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             files = json.loads(result.stdout)
 
@@ -68,7 +78,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
                 raise FileNotFoundError("No files returned from rclone lsjson")
 
             # find matching file by name
-            files = [f for f in files if f['Path'] == file_name]
+            files = [f for f in files if f["Path"] == file_name]
             if not files:
                 raise FileNotFoundError(f"File '{file_name}' not found in Google Drive")
 
@@ -77,25 +87,38 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
             return file
 
         except subprocess.CalledProcessError as e:
-            subprocess.Popen(["zenity", "--error", "--text", f"rclone failed:\n{e.stderr}"])
+            subprocess.Popen(
+                ["zenity", "--error", "--text", f"rclone failed:\n{e.stderr}"]
+            )
         except Exception as e:
-            subprocess.Popen(["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"])
+            subprocess.Popen(
+                ["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"]
+            )
 
     def open_rclone_url(self, menu, file_paths):
         for file_path in file_paths:
             try:
                 file = self._get_rclone_file(file_path)
-                file_id = file['ID']
+                file_id = file["ID"]
 
                 # send warning if file is open document format
-                if file['MimeType'] in self.OPENDOCUMENT_FORMATS:
-                    subprocess.Popen(["zenity", "--warning", "--text", "You are about to open an Open Document Format file.\n\nOpening this with Google Docs will create a copy of the file!"])
+                if file["MimeType"] in self.OPENDOCUMENT_FORMATS:
+                    subprocess.Popen(
+                        [
+                            "zenity",
+                            "--warning",
+                            "--text",
+                            "You are about to open an Open Document Format file.\n\nOpening this with Google Docs will create a copy of the file!",
+                        ]
+                    )
 
-                url = f'https://drive.google.com/open?id={file_id}'
+                url = f"https://drive.google.com/open?id={file_id}"
                 webbrowser.get("xdg-open").open(url)
 
             except Exception as e:
-                subprocess.Popen(["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"])
+                subprocess.Popen(
+                    ["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"]
+                )
 
     def _copy_to_clipboard(self, text):
         try:
@@ -108,8 +131,40 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
         file_path = file_paths[0]
         try:
             file = self._get_rclone_file(file_path)
-            file_id = file['ID']
-            url = f'https://drive.google.com/open?id={file_id}'
+            file_id = file["ID"]
+            url = f"https://drive.google.com/open?id={file_id}"
             self._copy_to_clipboard(url)
         except Exception as e:
-            subprocess.Popen(["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"])
+            subprocess.Popen(
+                ["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"]
+            )
+
+    def _copy_file(self, menu, file_paths):
+        try:
+            import httpx
+            # Determine the drive name from the first file path
+            if not file_paths:
+                return
+            relative_path = os.path.relpath(file_paths[0], self.RCLONE_MOUNT_PATH)
+            drive_name = relative_path.split(os.sep)[0]
+            sock_path = os.path.join(
+                os.environ.get("XDG_RUNTIME_DIR", "/run/user/%d" % os.getuid()),
+                "adfinis-rclone-mgr",
+                f"{drive_name}.sock",
+            )
+            # httpx expects the socket path as a str, and the URL as http://localhost/...
+            url = "http://localhost/gdrive/copy"
+            transport = httpx.HTTPTransport(uds=sock_path)
+            with httpx.Client(transport=transport) as client:
+                resp = client.post(url, json={"sources": file_paths}, timeout=600)
+                if resp.status_code != 200:
+                    raise Exception(f"Server error: {resp.text}")
+        except Exception as e:
+            subprocess.Popen([
+                "zenity", "--error", "--text", f"Failed to copy file(s) via daemon: {str(e)}"
+            ])
+
+    def copy_file(self, menu, file_paths):
+        threading.Thread(
+            target=self._copy_file, args=(menu, file_paths), daemon=True
+        ).start()

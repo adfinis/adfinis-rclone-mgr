@@ -10,8 +10,6 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
-
-	"github.com/spf13/cobra"
 )
 
 // LogEntry represents a parsed journalctl log line
@@ -22,9 +20,7 @@ type LogEntry struct {
 	Unit      string `json:"_SYSTEMD_UNIT"`
 }
 
-func journaldReader(cmd *cobra.Command, args []string) {
-	ctx := cmd.Context()
-	driveName := args[0]
+func journaldReader(ctx context.Context, driveName string) {
 	logs, errs := startJournalReader(ctx, driveName)
 
 	go func() {

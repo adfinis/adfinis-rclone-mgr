@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"strings"
@@ -46,8 +47,12 @@ func driveNameToUnitName(name string) string {
 	return fmt.Sprintf("rclone@%s.service", name)
 }
 
+func getGooglePath() string {
+	return path.Join(xdg.Home, "google")
+}
+
 func getDriveDataPath(name string) string {
-	return path.Join(xdg.Home, "google", name)
+	return path.Join(getGooglePath(), name)
 }
 
 func getDriveCachePath(name string) string {
@@ -56,4 +61,13 @@ func getDriveCachePath(name string) string {
 
 func fileNameToPath(driveName, fileName string) string {
 	return path.Join(getDriveDataPath(driveName), fileName)
+}
+
+func isDir(p string) bool {
+	info, err := os.Stat(p)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return info.IsDir()
 }

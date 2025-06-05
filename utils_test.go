@@ -105,3 +105,15 @@ func TestEnsureFolderExists(t *testing.T) {
 	err = ensureFolderExists(path.Join(dir, "test"))
 	assert.NoError(t, err)
 }
+
+func TestIsDir(t *testing.T) {
+	dir := t.TempDir()
+	err := os.Mkdir(path.Join(dir, "test"), 0755)
+	assert.NoError(t, err)
+
+	isd := isDir(path.Join(dir, "test"))
+	assert.True(t, isd)
+
+	isd = isDir(path.Join(dir, "nonexistent"))
+	assert.False(t, isd)
+}

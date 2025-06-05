@@ -65,6 +65,7 @@ nfpms:
       - nautilus-python
       - xclip
       - zenity
+      - python-httpx
     conflicts:
       - adfinis-rclone-mount
     contents:
@@ -95,12 +96,14 @@ nfpms:
           - python-nautilus
           - xclip
           - zenity
+          - python-httpx
       deb:
         dependencies:
           - rclone
           - python3-nautilus
           - xclip
           - zenity
+          - python3-httpx
 
 aurs:
   - name: "adfinis-rclone-mgr-bin"

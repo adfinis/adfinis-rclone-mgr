@@ -1,11 +1,11 @@
 [Unit]
-Description=adfinis-rclone-mgr journald reader for %I
+Description=adfinis-rclone-mgr daemon for %I
 After=rclone@%i.service
 PartOf=rclone@%i.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/adfinis-rclone-mgr journald-reader %I
+ExecStart=/usr/bin/adfinis-rclone-mgr daemon %I
 Restart=on-failure
 
 [Install]

@@ -70,7 +70,7 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
    ```
 2. Open the provided URL in your browser to configure Google Drive mounts.
 3. Follow the on-screen instructions to log in, select drives, and generate configurations.
-4. Use the Nautilus context menu to open files directly in Google Drive.
+4. Use the Nautilus context menu to open files directly in Google Drive or to copy files and folders between Google Drives using the special "Copy on Google Drive" action.
 
 ### Managing Mounts
 
@@ -94,7 +94,25 @@ You can now manage your Google Drive mounts directly from the terminal using the
   ```
   This will safely unmount the specified share.
 
-These commands allow you to quickly mount or unmount your Google Drive shares as needed.
+- **Copy files or folders between Google Drives (server-side, no conversion):**
+  ```bash
+  adfinis-rclone-mgr cp <source>... <destination>
+  ```
+  This command allows you to copy files or folders from one Google Drive to another, or within the same drive, using rclone's server-side copy. This avoids any file format conversion and is the recommended way to copy Google Docs, Sheets, and Slides natively.
+
+  > **Why not use normal copy?**
+  >
+  > If you use the standard copy methods (Ctrl+C, right-click + Copy, or drag & drop) in your file manager, rclone mounts will convert Google Docs, Sheets, and Slides to Microsoft Office formats (e.g., gdocs to .docx) during the copy. This can cause formatting issues. The `cp` command and the "Copy on Google Drive" Nautilus context menu entry ensure that all copy actions are performed server-side, preserving the native Google format and avoiding unwanted conversions.
+
+### Daemon Mode
+
+The `daemon` command replaces the old journald command. It runs a background process that reads logs from the systemd journal and handles IPC events for  features like server-side copy.
+
+```bash
+adfinis-rclone-mgr daemon <drive-name>
+```
+
+This is started automatically for each mounted drive.
 
 ## 🐞 Troubleshooting
 If there are still pending io operations on a share, or if you have a Drive folder open in your file manager, unmounting a share might fail.  

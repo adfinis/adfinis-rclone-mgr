@@ -44,7 +44,8 @@ func init() {
 		mountCmd,
 		umountCmd,
 		listCmd,
-		journaldReaderCmd,
+		daemonCmd,
+		copyCmd,
 		versionCmd,
 		manCmd,
 	)
@@ -122,15 +123,25 @@ var listCmd = &cobra.Command{
 	Run:   list,
 }
 
-var journaldReaderCmd = &cobra.Command{
-	Use:   "journald-reader",
-	Short: "Daemon to read logs from systemd journal",
+var daemonCmd = &cobra.Command{
+	Use:   "daemon",
+	Short: "Daemon to read logs from systemd journal and handle ipc events",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
 	Args:              cobra.ExactArgs(1),
 	ValidArgsFunction: availableMountsForArgs,
-	Run:               journaldReader,
+	Run:               daemon,
+}
+
+var copyCmd = &cobra.Command{
+	Use:   "cp",
+	Short: "Copy files or folders from one drive to another",
+	Long: "The cp command allows you to copy files or folders from one Google Drive to another.\n" +
+		"It supports copying single files, multiple files, or entire folders.\n" +
+		"You can use it as a drop-in replacement for the linux cp command, but with the added benefit of working across Google Drives.\n",
+	Args: cobra.MinimumNArgs(2),
+	Run:  copy,
 }
 
 var versionCmd = &cobra.Command{
