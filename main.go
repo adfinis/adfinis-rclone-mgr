@@ -46,6 +46,7 @@ func init() {
 		listCmd,
 		daemonCmd,
 		copyCmd,
+		moveCmd,
 		versionCmd,
 		manCmd,
 	)
@@ -142,6 +143,16 @@ var copyCmd = &cobra.Command{
 		"You can use it as a drop-in replacement for the linux cp command, but with the added benefit of working across Google Drives.\n",
 	Args: cobra.MinimumNArgs(2),
 	Run:  copy,
+}
+
+var moveCmd = &cobra.Command{
+	Use:   "mv",
+	Short: "Move files or folders from one drive to another",
+	Long: "The mv command allows you to move files or folders from one Google Drive to another.\n" +
+		"It supports moving single files, multiple files, or entire folders.\n" +
+		"You can use it as a drop-in replacement for the linux mv command, but with the added benefit of working across Google Drives.\n",
+	Args: cobra.MinimumNArgs(2),
+	Run:  move,
 }
 
 var versionCmd = &cobra.Command{

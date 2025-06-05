@@ -100,9 +100,15 @@ You can now manage your Google Drive mounts directly from the terminal using the
   ```
   This command allows you to copy files or folders from one Google Drive to another, or within the same drive, using rclone's server-side copy. This avoids any file format conversion and is the recommended way to copy Google Docs, Sheets, and Slides natively.
 
-  > **Why not use normal copy?**
+- **Move files or folders between Google Drives (server-side, no conversion):**
+  ```bash
+  adfinis-rclone-mgr mv <source>... <destination>
+  ```
+  This command allows you to move files or folders from one Google Drive to another, or within the same drive, using rclone's server-side move. This avoids any file format conversion and is the recommended way to move Google Docs, Sheets, and Slides natively.
+
+  > **Why not use normal copy or move?**
   >
-  > If you use the standard copy methods (Ctrl+C, right-click + Copy, or drag & drop) in your file manager, rclone mounts will convert Google Docs, Sheets, and Slides to Microsoft Office formats (e.g., gdocs to .docx) during the copy. This can cause formatting issues. The `cp` command and the "Copy on Google Drive" Nautilus context menu entry ensure that all copy actions are performed server-side, preserving the native Google format and avoiding unwanted conversions.
+  > If you use the standard copy or move methods (ctrl+c/ctrl+x, right-click + Copy/Move, or drag & drop) in your file manager or `cp`, `rsync`, `mv`, etc. in the terminal, rclone mountes will convert Google Docs, Sheets, and Slides to Microsoft Office formats (e.g., gdocs to .docx) during the operation. This can cause formatting issues. The `cp` and `mv` commands and the "Copy on Google Drive"/"Move on Google Drive" Nautilus context menu entries ensure that all copy and move actions are performed server-side, preserving the native Google format and avoiding unwanted conversions.
 
 ### Daemon Mode
 

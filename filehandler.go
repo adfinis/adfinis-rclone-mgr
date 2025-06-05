@@ -15,7 +15,13 @@ import (
 func copy(cmd *cobra.Command, args []string) {
 	// last arg is the destination directory
 	dest := args[len(args)-1]
-	copyFile(args[:len(args)-1], dest)
+	runRcloneOp("copy", args[:len(args)-1], dest)
+}
+
+func move(cmd *cobra.Command, args []string) {
+	// last arg is the destination directory
+	dest := args[len(args)-1]
+	runRcloneOp("move", args[:len(args)-1], dest)
 }
 
 // isSubdir checks if sub is a subdirectory (or the same) as root.
@@ -85,7 +91,7 @@ func selectDestination() (string, error) {
 	return destDir, nil
 }
 
-func selectDestAndCopy(srcPaths []string) {
+func selectDestAndRunOP(srcPaths []string, op string) {
 	destDir, err := selectDestination()
 	if err != nil {
 		log.Println("Failed to select destination:", err)
@@ -97,10 +103,11 @@ func selectDestAndCopy(srcPaths []string) {
 		return
 	}
 
-	copyFile(srcPaths, destDir)
+	runRcloneOp(op, srcPaths, destDir)
 }
 
-func copyFile(srcPaths []string, destDir string) {
+// runRcloneOp runs rclone with the given operation ("copy" or "move")
+func runRcloneOp(op string, srcPaths []string, destDir string) {
 	absGoogleRoot, err := filepath.Abs(getGooglePath())
 	if err != nil {
 		showZenityError("Failed to resolve Google Drive root")
@@ -140,18 +147,33 @@ func copyFile(srcPaths []string, destDir string) {
 		if isDir(src) {
 			destRclone = patchDestPath(srcPath, destRclone)
 		}
-		log.Printf("Copying from %s to %s", srcRclone, destRclone)
+		// ahhh yes
+		verb := op
+		switch op {
+		case "copy":
+			verb = "copy"
+		case "move":
+			verb = "mov"
+		}
+		log.Printf("%sing from %s to %s", verb, srcRclone, destRclone)
 
-		cmd := exec.Command("rclone", "copy", "--drive-server-side-across-configs", srcRclone, destRclone, "-v")
+		cmd := exec.Command("rclone", op, "--drive-server-side-across-configs", srcRclone, destRclone, "-v")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err = cmd.Run()
 		if err != nil {
-			showZenityError("rclone copy failed: " + err.Error())
+			showZenityError(fmt.Sprintf("rclone %s failed: %v", op, err))
 			return
 		}
 	}
-	if err := exec.Command("zenity", "--info", "--text", "File(s) copied successfully").Run(); err != nil {
+	var msg string
+	switch op {
+	case "copy":
+		msg = "File(s) copied successfully"
+	case "move":
+		msg = "File(s) moved successfully"
+	}
+	if err := exec.Command("zenity", "--info", "--text", msg).Run(); err != nil {
 		log.Println("Failed to show success dialog:", err)
 	}
 }

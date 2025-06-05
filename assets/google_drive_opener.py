@@ -3,7 +3,6 @@ import os
 import subprocess
 import webbrowser
 import json
-import threading
 
 """
 This extension adds a context menu item to Nautilus for opening files in Google Drive.
@@ -45,10 +44,18 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
         copy_file_item = Nautilus.MenuItem(
             name="GoogleDriveOpener::CopyFile",
             label="Copy on Google Drive",
-            tip="Copy Files or Folders on Google Drive",
+            tip="Copy on Google Drive",
         )
-        copy_file_item.connect("activate", self._copy_file, file_paths)
+        copy_file_item.connect("activate", self.copy_file, file_paths)
         items.append(copy_file_item)
+
+        move_file_item = Nautilus.MenuItem(
+            name="GoogleDriveOpener::MoveFile",
+            label="Move on Google Drive",
+            tip="Move on Google Drive",
+        )
+        move_file_item.connect("activate", self.move_file, file_paths)
+        items.append(move_file_item)
 
         # add copy button if only one file is selected
         if len(file_paths) == 1:
@@ -139,10 +146,9 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
                 ["zenity", "--error", "--text", f"Unexpected error:\n{str(e)}"]
             )
 
-    def _copy_file(self, menu, file_paths):
+    def _send_file_op(self, file_paths, op):
         try:
             import httpx
-            # Determine the drive name from the first file path
             if not file_paths:
                 return
             relative_path = os.path.relpath(file_paths[0], self.RCLONE_MOUNT_PATH)
@@ -152,8 +158,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
                 "adfinis-rclone-mgr",
                 f"{drive_name}.sock",
             )
-            # httpx expects the socket path as a str, and the URL as http://localhost/...
-            url = "http://localhost/gdrive/copy"
+            url = f"http://localhost/gdrive/{op}"
             transport = httpx.HTTPTransport(uds=sock_path)
             with httpx.Client(transport=transport) as client:
                 resp = client.post(url, json={"sources": file_paths}, timeout=600)
@@ -161,10 +166,11 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
                     raise Exception(f"Server error: {resp.text}")
         except Exception as e:
             subprocess.Popen([
-                "zenity", "--error", "--text", f"Failed to copy file(s) via daemon: {str(e)}"
+                "zenity", "--error", "--text", f"Failed to {op} file(s) via daemon: {str(e)}"
             ])
 
     def copy_file(self, menu, file_paths):
-        threading.Thread(
-            target=self._copy_file, args=(menu, file_paths), daemon=True
-        ).start()
+        self._send_file_op(file_paths, "copy")
+
+    def move_file(self, menu, file_paths):
+        self._send_file_op(file_paths, "move")

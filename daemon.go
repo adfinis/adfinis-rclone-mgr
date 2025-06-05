@@ -71,19 +71,18 @@ func ipcServer(driveName string) {
 	}
 }
 
-type copyRequest struct {
+type gdriveOPRequest struct {
 	Sources []string `json:"sources"`
 }
 
-func newHTTPHandler() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/gdrive/copy", func(w http.ResponseWriter, r *http.Request) {
+func handleGDriveOp(op string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			w.Write([]byte("Method not allowed")) // nolint:errcheck
 			return
 		}
-		var req copyRequest
+		var req gdriveOPRequest
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil || len(req.Sources) == 0 {
 			w.WriteHeader(http.StatusBadRequest)
@@ -91,14 +90,19 @@ func newHTTPHandler() http.Handler {
 			return
 		}
 
-		log.Println("Received copy request for sources:", req.Sources)
+		log.Printf("Received %s request for sources: %v", op, req.Sources)
 
-		// copy files in background
-		go selectDestAndCopy(req.Sources)
+		// run files in background
+		go selectDestAndRunOP(req.Sources, op)
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK")) // nolint:errcheck
-	})
+	}
+}
 
+func newHTTPHandler() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/gdrive/copy", handleGDriveOp("copy"))
+	mux.HandleFunc("/gdrive/move", handleGDriveOp("move"))
 	return mux
 }

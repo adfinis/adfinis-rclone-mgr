@@ -26,6 +26,7 @@ func TestRootCmd_HasSubcommands(t *testing.T) {
 		"ls",
 		"daemon",
 		"cp",
+		"mv",
 		"version",
 		"man",
 	}
