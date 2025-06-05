@@ -3,6 +3,7 @@ import os
 import subprocess
 import webbrowser
 import json
+import httpx
 
 """
 This extension adds a context menu item to Nautilus for opening files in Google Drive.
@@ -148,7 +149,6 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
 
     def _send_file_op(self, file_paths, op):
         try:
-            import httpx
             if not file_paths:
                 return
             relative_path = os.path.relpath(file_paths[0], self.RCLONE_MOUNT_PATH)
@@ -165,9 +165,14 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
                 if resp.status_code != 200:
                     raise Exception(f"Server error: {resp.text}")
         except Exception as e:
-            subprocess.Popen([
-                "zenity", "--error", "--text", f"Failed to {op} file(s) via daemon: {str(e)}"
-            ])
+            subprocess.Popen(
+                [
+                    "zenity",
+                    "--error",
+                    "--text",
+                    f"Failed to {op} file(s) via daemon: {str(e)}",
+                ]
+            )
 
     def copy_file(self, menu, file_paths):
         self._send_file_op(file_paths, "copy")
