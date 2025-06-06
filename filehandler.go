@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +12,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func copy(cmd *cobra.Command, args []string) {
@@ -74,6 +78,7 @@ func patchDestPath(src, dest string) string {
 }
 
 func showZenityError(msg string) {
+	log.Println("Error:", msg)
 	if err := exec.Command("zenity", "--error", "--text", msg).Run(); err != nil {
 		log.Println("Failed to show error dialog:", err)
 	}
@@ -125,7 +130,66 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 		return
 	}
 
+	var filesCount int
 	for _, src := range srcPaths {
+		if isDir(src) {
+			filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
+				if err == nil && !d.IsDir() {
+					filesCount++
+				}
+				return nil
+			})
+		} else {
+			filesCount++
+		}
+	}
+	if filesCount == 0 {
+		showZenityError("No source files provided")
+		return
+	}
+
+	verb := op
+	if op == "move" {
+		verb = "mov"
+	}
+
+	caser := cases.Title(language.AmericanEnglish)
+
+	zenityCmd := exec.Command("zenity", "--progress", "--auto-close", "--title", caser.String(op)+" on Google Drive", "--text", caser.String(verb)+"ing files...", "--percentage=0")
+	zenityIn, err := zenityCmd.StdinPipe()
+	if err != nil {
+		showZenityError("Failed to start zenity progress bar")
+		return
+	}
+	if err := zenityCmd.Start(); err != nil {
+		showZenityError("Failed to start zenity progress bar")
+		return
+	}
+
+	var runningRcloneProc *exec.Cmd
+	cancelled := make(chan struct{})
+	go func() {
+		err := zenityCmd.Wait()
+		if err != nil {
+			if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
+				log.Println("Zenity progress bar cancelled by user")
+				if runningRcloneProc != nil {
+					runningRcloneProc.Cancel() // nolint:errcheck
+				}
+			}
+		}
+		close(cancelled)
+	}()
+
+	filesDone := 0
+	for _, src := range srcPaths {
+		select {
+		case <-cancelled:
+			log.Println("Operation cancelled by user")
+			return
+		default:
+		}
+
 		isSub, err := isSubdir(absGoogleRoot, src)
 		if err != nil || !isSub {
 			showZenityError("Source must be inside your Google Drive mount")
@@ -147,30 +211,37 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 		if isDir(src) {
 			destRclone = patchDestPath(srcPath, destRclone)
 		}
-		// ahhh yes
-		verb := op
-		switch op {
-		case "copy":
-			verb = "copy"
-		case "move":
-			verb = "mov"
-		}
 		log.Printf("%sing from %s to %s", verb, srcRclone, destRclone)
 
-		cmd := exec.Command("rclone", op, "--drive-server-side-across-configs", srcRclone, destRclone, "-v")
+		cmd := exec.CommandContext(context.Background(), "rclone", op, "--drive-server-side-across-configs", srcRclone, destRclone, "-v")
+		runningRcloneProc = cmd
 		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
+		// rclone -v writes to stderr
+		stderr, err := cmd.StderrPipe()
 		if err != nil {
+			showZenityError(fmt.Sprintf("Failed to create stderr pipe for rclone %s: %v", op, err))
+			return
+		}
+		if err := cmd.Start(); err != nil {
 			showZenityError(fmt.Sprintf("rclone %s failed: %v", op, err))
 			return
 		}
+
+		scanner := bufio.NewScanner(stderr)
+		for scanner.Scan() {
+			line := scanner.Text()
+			fmt.Println(line)
+			if strings.Contains(line, "Moved (server-side)") || strings.Contains(line, "Copied (server-side copy)") {
+				filesDone++
+				percent := int(float64(filesDone) / float64(filesCount) * 100)
+				fmt.Fprintf(zenityIn, "%d\n", percent)
+			}
+		}
 	}
-	var msg string
-	switch op {
-	case "copy":
-		msg = "File(s) copied successfully"
-	case "move":
+	zenityIn.Close()
+
+	msg := "File(s) copied successfully"
+	if op == "move" {
 		msg = "File(s) moved successfully"
 	}
 	if err := exec.Command("zenity", "--info", "--text", msg).Run(); err != nil {
