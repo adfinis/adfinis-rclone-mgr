@@ -133,12 +133,15 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 	var filesCount int
 	for _, src := range srcPaths {
 		if isDir(src) {
-			filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
+			if err := filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
 				if err == nil && !d.IsDir() {
 					filesCount++
 				}
 				return nil
-			})
+			}); err != nil {
+				showZenityError(fmt.Sprintf("Failed to count files in directory %s: %v", src, err))
+				return
+			}
 		} else {
 			filesCount++
 		}
@@ -234,11 +237,11 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 			if strings.Contains(line, "Moved (server-side)") || strings.Contains(line, "Copied (server-side copy)") {
 				filesDone++
 				percent := int(float64(filesDone) / float64(filesCount) * 100)
-				fmt.Fprintf(zenityIn, "%d\n", percent)
+				fmt.Fprintf(zenityIn, "%d\n", percent) // nolint:errcheck
 			}
 		}
 	}
-	zenityIn.Close()
+	zenityIn.Close() // nolint:errcheck
 
 	msg := "File(s) copied successfully"
 	if op == "move" {
