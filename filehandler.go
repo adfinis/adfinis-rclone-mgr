@@ -198,7 +198,14 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 			showZenityError("Source must be inside your Google Drive mount")
 			return
 		}
-		srcDriveName, srcPath, err := toRclonePath(absGoogleRoot, src)
+
+		absSrc, err := filepath.Abs(src)
+		if err != nil {
+			showZenityError("Failed to resolve source path")
+			return
+		}
+
+		srcDriveName, srcPath, err := toRclonePath(absGoogleRoot, absSrc)
 		if err != nil {
 			showZenityError("Failed to parse source path")
 			return
