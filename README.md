@@ -10,7 +10,10 @@
 This repository provides a streamlined way to mount Google Drive using Rclone, tailored for Adfinis workflows. It includes:
 - A web-based configuration tool for Google Drive mounts.
 - Systemd service templates for managing Rclone mounts.
-- Nautilus integration for opening files directly in Google Drive and copying shareable links.
+- Nautilus integration 
+  - Open file in Google Drive
+  - Copy Google Drive link to a file
+  - Copy and move files using server-side actions to avoid file conversions
 - CLI Tool to mount and umount shares.
 - Better error handling in case of permission errors.
 
