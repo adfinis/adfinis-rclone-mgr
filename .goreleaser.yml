@@ -114,6 +114,12 @@ aurs:
     license: "GPL3"
     private_key: "{{ .Env.AUR_KEY }}"
     git_url: "ssh://aur@aur.archlinux.org/adfinis-rclone-mgr-bin.git"
+    depends:
+      - rclone
+      - python-nautilus
+      - xclip
+      - zenity
+      - python-httpx
     package: |-
       cd ./{{ .ProjectName }}-v{{ .Version }}-linux-amd64
       # bin
