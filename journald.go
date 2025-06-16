@@ -106,6 +106,7 @@ var ignoredErrorsByDrive = map[string][]string{
 		"Failed to copy: googleapi: Error 403", // occurs when trying to copy a file without permissions
 		"failed to create directory",           // occurs when trying to create a directory without permissions
 		"failed to make directory",             // occurs when trying to create a directory without permissions
+		"Dir.Remove not empty",                 // occurs when trying to remove a non empty directory. Deletion still works because rclone will remove the files and then folders.
 	},
 }
 

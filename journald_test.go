@@ -157,6 +157,12 @@ func TestShouldTriggerError(t *testing.T) {
 			drive:   "my_drive",
 			want:    true,
 		},
+		{
+			name:    "Delete non-empty directory error",
+			message: "2025/06/16 15:37:34 ERROR : Team Wolf/TEST/asdfasdf/: Dir.Remove not empty",
+			drive:   "some_shared_drive",
+			want:    false,
+		},
 	}
 
 	for _, tt := range tests {
