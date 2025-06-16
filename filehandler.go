@@ -241,7 +241,7 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 		for scanner.Scan() {
 			line := scanner.Text()
 			fmt.Println(line)
-			if strings.Contains(line, "Moved (server-side)") || strings.Contains(line, "Copied (server-side copy)") {
+			if isProgressString(line) {
 				filesDone++
 				percent := int(float64(filesDone) / float64(filesCount) * 100)
 				fmt.Fprintf(zenityIn, "%d\n", percent) // nolint:errcheck
@@ -257,4 +257,10 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 	if err := exec.Command("zenity", "--info", "--text", msg).Run(); err != nil {
 		log.Println("Failed to show success dialog:", err)
 	}
+}
+
+func isProgressString(s string) bool {
+	return strings.Contains(s, "Moved (server-side)") ||
+		strings.Contains(s, "Copied (server-side copy)") ||
+		strings.Contains(s, "Copied (server side copy)") // old rclone versions
 }
