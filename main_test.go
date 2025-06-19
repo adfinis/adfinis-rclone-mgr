@@ -11,7 +11,6 @@ import (
 func TestRootCmd_UsageAndShort(t *testing.T) {
 	assert.Equal(t, "adfinis-rclone-mgr", rootCmd.Use)
 	assert.Contains(t, rootCmd.Short, "Google Drive")
-	assert.Equal(t, Version, rootCmd.Version)
 }
 
 func TestRootCmd_HasSubcommands(t *testing.T) {
@@ -27,8 +26,6 @@ func TestRootCmd_HasSubcommands(t *testing.T) {
 		"daemon",
 		"cp",
 		"mv",
-		"version",
-		"man",
 	}
 	for _, name := range expected {
 		assert.Contains(t, subNames, name)

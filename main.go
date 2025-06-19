@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"os"
 
-	mcobra "github.com/muesli/mango-cobra"
-	"github.com/muesli/roff"
+	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
 )
 
@@ -32,10 +31,6 @@ var rootCmd = &cobra.Command{
 			log.Fatalln("Failed to show help:", err)
 		}
 	},
-	CompletionOptions: cobra.CompletionOptions{
-		HiddenDefaultCmd: true,
-	},
-	Version: Version,
 }
 
 func init() {
@@ -47,8 +42,6 @@ func init() {
 		daemonCmd,
 		copyCmd,
 		moveCmd,
-		versionCmd,
-		manCmd,
 	)
 }
 
@@ -61,9 +54,6 @@ var gdriveConfigCmd = &cobra.Command{
 		"The config file will be saved in the default location for rclone configs (~/.config/rclone/rclone.conf).\n" +
 		"Existing rclone remotes won't be overwritten unless the name conflicts with the name of a Google Drive.\n",
 	Run: gdriveConfig,
-	CompletionOptions: cobra.CompletionOptions{
-		HiddenDefaultCmd: true,
-	},
 }
 
 var mountCmd = &cobra.Command{
@@ -74,9 +64,7 @@ var mountCmd = &cobra.Command{
 		"Use 'mount <drive>' to mount a specific drive.\n" +
 		"Use 'mount <drive1> <drive2>' to mount multiple drives at once.\n" +
 		"You can use tab completion to see all available drives.\n",
-	CompletionOptions: cobra.CompletionOptions{
-		DisableDefaultCmd: true,
-	},
+
 	Args:              cobra.MinimumNArgs(1),
 	ValidArgsFunction: availableMountsForArgs,
 	Run:               mount,
@@ -98,9 +86,6 @@ var umountCmd = &cobra.Command{
 		"Use 'umount <drive>' to umount a specific drive.\n" +
 		"Use 'umount <drive1> <drive2>' to umount multiple drives at once.\n" +
 		"You can use tab completion to see all available drives.\n",
-	CompletionOptions: cobra.CompletionOptions{
-		DisableDefaultCmd: true,
-	},
 	Args:              cobra.MinimumNArgs(1),
 	ValidArgsFunction: availableMountsForArgs,
 	Run:               umount,
@@ -125,11 +110,8 @@ var listCmd = &cobra.Command{
 }
 
 var daemonCmd = &cobra.Command{
-	Use:   "daemon",
-	Short: "Daemon to read logs from systemd journal and handle ipc events",
-	CompletionOptions: cobra.CompletionOptions{
-		DisableDefaultCmd: true,
-	},
+	Use:               "daemon",
+	Short:             "Daemon to read logs from systemd journal and handle ipc events",
 	Args:              cobra.ExactArgs(1),
 	ValidArgsFunction: availableMountsForArgs,
 	Run:               daemon,
@@ -155,36 +137,13 @@ var moveCmd = &cobra.Command{
 	Run:  move,
 }
 
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the version details",
-	Run: func(_ *cobra.Command, _ []string) {
-		fmt.Printf("Version: %s\n", Version)
-		fmt.Printf("Commit: %s\n", Commit)
-		fmt.Printf("Date: %s\n", Date)
-		fmt.Printf("BuiltBy: %s\n", BuiltBy)
-	},
-}
-
-var manCmd = &cobra.Command{
-	Use:                   "man",
-	Short:                 "generates the manpages",
-	SilenceUsage:          true,
-	DisableFlagsInUseLine: true,
-	Hidden:                true,
-	Args:                  cobra.NoArgs,
-	RunE: func(_ *cobra.Command, _ []string) error {
-		manPage, err := mcobra.NewManPage(1, rootCmd)
-		if err != nil {
-			return err
-		}
-		_, err = fmt.Fprint(os.Stdout, manPage.Build(roff.NewDocument()))
-		return err
-	},
-}
-
 func Execute() error {
-	return rootCmd.Execute()
+	return fang.Execute(
+		context.Background(),
+		rootCmd,
+		fang.WithCommit(Commit),
+		fang.WithVersion(Version),
+	)
 }
 
 func main() {
