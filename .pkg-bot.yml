@@ -1,0 +1,26 @@
+---
+
+onlytest: false
+
+pkgbot:
+  repo: adsy-public
+  download-delay: 11
+  branches:
+    - staging
+  stages:
+    - package
+  packages:
+    debian:
+      buster:
+        - dist/*.deb
+      bullseye:
+        - dist/*.deb
+      bookworm:
+        - dist/*.deb
+    ubuntu:
+      bionic:
+        - dist/*.deb
+      focal:
+        - dist/*.deb
+      jammy:
+        - dist/*.deb

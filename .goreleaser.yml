@@ -150,6 +150,13 @@ aurs:
       mkdir -pv "${pkgdir}/usr/share/doc/{{ .ProjectName }}/"
       install -Dm644 README* "${pkgdir}/usr/share/doc/{{ .ProjectName }}/"
 
+publishers:
+  - name: aptly
+    cmd: go run scripts/pkg-upload/main.go
+    env:
+      - UPLOAD_USER={{ .Env.UPLOAD_USER }}
+      - UPLOAD_SECRET={{ .Env.UPLOAD_SECRET }}
+
 snapshot:
   version_template: "{{ incpatch .Version }}-devel"
 
