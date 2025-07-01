@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/muesli/mango-cobra v1.2.0
 	github.com/muesli/roff v0.1.0
-	github.com/rclone/rclone v1.70.1
+	github.com/rclone/rclone v1.70.2
 	github.com/samber/lo v1.51.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
