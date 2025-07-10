@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ncruces/zenity"
 	"github.com/spf13/cobra"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -79,14 +80,13 @@ func patchDestPath(src, dest string) string {
 
 func showZenityError(msg string) {
 	log.Println("Error:", msg)
-	if err := exec.Command("zenity", "--error", "--text", msg).Run(); err != nil {
+	if err := zenity.Error("msg"); err != nil {
 		log.Println("Failed to show error dialog:", err)
 	}
 }
 
 func selectDestination() (string, error) {
-	zenityCmd := exec.Command("zenity", "--file-selection", "--directory", "--title=Select destination directory for copy")
-	zenityOut, err := zenityCmd.Output()
+	zenityOut, err := zenity.SelectFile(zenity.Directory(), zenity.Title("Select destination directory for copy"))
 	if err != nil {
 		showZenityError("Copy cancelled or failed to select destination")
 		return "", err
@@ -158,30 +158,31 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 
 	caser := cases.Title(language.AmericanEnglish)
 
-	zenityCmd := exec.Command("zenity", "--progress", "--auto-close", "--title", caser.String(op)+" on Google Drive", "--text", caser.String(verb)+"ing files...", "--percentage=0")
-	zenityIn, err := zenityCmd.StdinPipe()
+	progressDialog, err := zenity.Progress(
+		zenity.Title(caser.String(op)+" on Google Drive"),
+		zenity.AutoClose(),
+	)
 	if err != nil {
-		showZenityError("Failed to start zenity progress bar")
+		showZenityError("Failed to start progress dialog")
 		return
 	}
-	if err := zenityCmd.Start(); err != nil {
-		showZenityError("Failed to start zenity progress bar")
+	defer progressDialog.Close()
+
+	// Set initial text
+	if err := progressDialog.Text(caser.String(verb) + "ing files..."); err != nil {
+		showZenityError("Failed to set progress dialog text")
 		return
 	}
 
 	var runningRcloneProc *exec.Cmd
 	cancelled := make(chan struct{})
 	go func() {
-		err := zenityCmd.Wait()
-		if err != nil {
-			if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
-				log.Println("Zenity progress bar cancelled by user")
-				if runningRcloneProc != nil {
-					runningRcloneProc.Cancel() // nolint:errcheck
-				}
-			}
+		defer close(cancelled)
+		<-progressDialog.Done()
+		log.Println("Progress dialog cancelled by user")
+		if runningRcloneProc != nil {
+			runningRcloneProc.Cancel() // nolint:errcheck
 		}
-		close(cancelled)
 	}()
 
 	filesDone := 0
@@ -244,17 +245,19 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 			if isProgressString(line) {
 				filesDone++
 				percent := int(float64(filesDone) / float64(filesCount) * 100)
-				fmt.Fprintf(zenityIn, "%d\n", percent) // nolint:errcheck
+				if err := progressDialog.Value(percent); err != nil {
+					log.Printf("Failed to update progress: %v", err)
+				}
 			}
 		}
 	}
-	zenityIn.Close() // nolint:errcheck
+	progressDialog.Close() // nolint:errcheck
 
 	msg := "File(s) copied successfully"
 	if op == "move" {
 		msg = "File(s) moved successfully"
 	}
-	if err := exec.Command("zenity", "--info", "--text", msg).Run(); err != nil {
+	if err := zenity.Info(msg); err != nil {
 		log.Println("Failed to show success dialog:", err)
 	}
 }
