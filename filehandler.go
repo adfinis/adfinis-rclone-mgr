@@ -166,7 +166,7 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 		showZenityError("Failed to start progress dialog")
 		return
 	}
-	defer progressDialog.Close()
+	defer progressDialog.Close() // nolint:errcheck
 
 	// Set initial text
 	if err := progressDialog.Text(caser.String(verb) + "ing files..."); err != nil {
