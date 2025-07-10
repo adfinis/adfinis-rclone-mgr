@@ -267,3 +267,151 @@ func isProgressString(s string) bool {
 		strings.Contains(s, "Copied (server-side copy)") ||
 		strings.Contains(s, "Copied (server side copy)") // old rclone versions
 }
+
+func duplicateFiles(sources []string) {
+	absGoogleRoot, err := filepath.Abs(getGooglePath())
+	if err != nil {
+		showZenityError("Failed to resolve Google Drive root")
+		return
+	}
+
+	// Count files for progress tracking
+	var filesCount int
+	for _, src := range sources {
+		if isDir(src) {
+			if err := filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
+				if err == nil && !d.IsDir() {
+					filesCount++
+				}
+				return nil
+			}); err != nil {
+				showZenityError(fmt.Sprintf("Failed to count files in directory %s: %v", src, err))
+				return
+			}
+		} else {
+			filesCount++
+		}
+	}
+	if filesCount == 0 {
+		showZenityError("No source files provided")
+		return
+	}
+
+	progressDialog, err := zenity.Progress(
+		zenity.Title("Duplicate on Google Drive"),
+		zenity.AutoClose(),
+	)
+	if err != nil {
+		showZenityError("Failed to start progress dialog")
+		return
+	}
+	defer progressDialog.Close() // nolint:errcheck
+
+	// Set initial text
+	if err := progressDialog.Text("Duplicating files..."); err != nil {
+		showZenityError("Failed to set progress dialog text")
+		return
+	}
+
+	var runningRcloneProc *exec.Cmd
+	cancelled := make(chan struct{})
+	go func() {
+		defer close(cancelled)
+		<-progressDialog.Done()
+		log.Println("Progress dialog cancelled by user")
+		if runningRcloneProc != nil {
+			runningRcloneProc.Cancel() // nolint:errcheck
+		}
+	}()
+
+	filesDone := 0
+	for _, src := range sources {
+		select {
+		case <-cancelled:
+			log.Println("Operation cancelled by user")
+			return
+		default:
+		}
+
+		// Verify source is under Google Drive mount
+		isSub, err := isSubdir(absGoogleRoot, src)
+		if err != nil || !isSub {
+			showZenityError("Source must be inside your Google Drive mount")
+			return
+		}
+
+		absSrc, err := filepath.Abs(src)
+		if err != nil {
+			showZenityError("Failed to resolve source path")
+			return
+		}
+
+		srcDriveName, srcPath, err := toRclonePath(absGoogleRoot, absSrc)
+		if err != nil {
+			showZenityError("Failed to parse source path")
+			return
+		}
+
+		// Generate destination path with "copy_of_" prefix
+		var destPath string
+		if isDir(src) {
+			// For directories, add "copy_of_" prefix to the directory name
+			baseName := filepath.Base(srcPath)
+			destPath = filepath.Join(filepath.Dir(srcPath), "copy_of_"+baseName)
+		} else {
+			// For files, add "copy_of_" prefix while preserving extension
+			ext := filepath.Ext(srcPath)
+			baseName := strings.TrimSuffix(filepath.Base(srcPath), ext)
+			destPath = filepath.Join(filepath.Dir(srcPath), "copy_of_"+baseName+ext)
+		}
+
+		srcRclone := fmt.Sprintf("%s:%s", srcDriveName, srcPath)
+		destRclone := fmt.Sprintf("%s:%s", srcDriveName, destPath)
+
+		log.Printf("Duplicating from %s to %s", srcRclone, destRclone)
+
+		// Use copyto for individual file duplication, copy for directories
+		var cmd *exec.Cmd
+		if isDir(src) {
+			cmd = exec.CommandContext(context.Background(), "rclone", "copy", "--drive-server-side-across-configs", srcRclone, destRclone, "-v")
+		} else {
+			cmd = exec.CommandContext(context.Background(), "rclone", "copyto", "--drive-server-side-across-configs", srcRclone, destRclone, "-v")
+		}
+
+		runningRcloneProc = cmd
+		cmd.Stdout = os.Stdout
+		// rclone -v writes to stderr
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			showZenityError(fmt.Sprintf("Failed to create stderr pipe for rclone duplicate: %v", err))
+			return
+		}
+		if err := cmd.Start(); err != nil {
+			showZenityError(fmt.Sprintf("rclone duplicate failed: %v", err))
+			return
+		}
+
+		scanner := bufio.NewScanner(stderr)
+		for scanner.Scan() {
+			line := scanner.Text()
+			fmt.Println(line)
+			if isProgressString(line) {
+				filesDone++
+				percent := int(float64(filesDone) / float64(filesCount) * 100)
+				if err := progressDialog.Value(percent); err != nil {
+					log.Printf("Failed to update progress: %v", err)
+				}
+			}
+		}
+
+		// Wait for the command to complete
+		if err := cmd.Wait(); err != nil {
+			showZenityError(fmt.Sprintf("rclone duplicate failed: %v", err))
+			return
+		}
+	}
+
+	if err := zenity.Info("File(s) duplicated successfully"); err != nil {
+		log.Println("Failed to show success dialog:", err)
+	}
+}
