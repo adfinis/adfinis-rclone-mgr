@@ -58,6 +58,14 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
         move_file_item.connect("activate", self.move_file, file_paths)
         items.append(move_file_item)
 
+        duplicate_file_item = Nautilus.MenuItem(
+            name="GoogleDriveOpener::DuplicateFile",
+            label="Duplicate on Google Drive",
+            tip="Duplicate on Google Drive",
+        )
+        duplicate_file_item.connect("activate", self.duplicate_file, file_paths)
+        items.append(duplicate_file_item)
+
         # add copy button if only one file is selected
         if len(file_paths) == 1:
             copy_file_link_item = Nautilus.MenuItem(
@@ -179,3 +187,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
 
     def move_file(self, menu, file_paths):
         self._send_file_op(file_paths, "move")
+    
+    def duplicate_file(self, menu, file_paths):
+        self._send_file_op(file_paths, "duplicate")
+

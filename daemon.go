@@ -76,24 +76,61 @@ type gdriveOPRequest struct {
 }
 
 func handleGDriveOp(op string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			w.Write([]byte("Method not allowed")) // nolint:errcheck
-			return
-		}
-		var req gdriveOPRequest
-		err := json.NewDecoder(r.Body).Decode(&req)
-		if err != nil || len(req.Sources) == 0 {
+	switch op {
+	case "copy", "move":
+		return handleGDriveOpWithFileSelect(op)
+	case "duplicate":
+		return handleGDriveOPDuplicate()
+	default:
+		return func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Invalid request: must provide sources")) // nolint:errcheck
-			return
+			w.Write([]byte("Invalid operation")) // nolint:errcheck
 		}
+	}
+}
 
-		log.Printf("Received %s request for sources: %v", op, req.Sources)
+func parseOpRequestBody(op string, w http.ResponseWriter, r *http.Request) *gdriveOPRequest {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte("Method not allowed")) // nolint:errcheck
+		return nil
+	}
+	var req gdriveOPRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil || len(req.Sources) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid request: must provide sources")) // nolint:errcheck
+		return nil
+	}
+
+	log.Printf("Received %s request for sources: %v", op, req.Sources)
+	return &req
+}
+
+func handleGDriveOpWithFileSelect(op string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := parseOpRequestBody(op, w, r)
+		if req == nil {
+			return // Error response already sent in parseOpRequestBody
+		}
 
 		// run files in background
 		go selectDestAndRunOP(req.Sources, op)
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK")) // nolint:errcheck
+	}
+}
+
+func handleGDriveOPDuplicate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := parseOpRequestBody("duplicate", w, r)
+		if req == nil {
+			return // Error response already sent in parseOpRequestBody
+		}
+
+		// run in background
+		go duplicateFiles(req.Sources)
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK")) // nolint:errcheck
@@ -104,5 +141,6 @@ func newHTTPHandler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/gdrive/copy", handleGDriveOp("copy"))
 	mux.HandleFunc("/gdrive/move", handleGDriveOp("move"))
+	mux.HandleFunc("/gdrive/duplicate", handleGDriveOp("duplicate"))
 	return mux
 }
