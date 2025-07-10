@@ -10,6 +10,8 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/ncruces/zenity"
 )
 
 // LogEntry represents a parsed journalctl log line
@@ -264,32 +266,27 @@ func moveFile(src, dest string) error {
 }
 
 func sendDesktopNotificationError(title, message string) error {
-	cmd := exec.Command("zenity", "--error", "--text", message, "--title", title)
-	if err := cmd.Run(); err != nil {
+	if err := zenity.Error(message, zenity.Title(title)); err != nil {
 		return fmt.Errorf("failed to send notification: %w", err)
 	}
 	return nil
 }
 
 func sendDesktopNotificationInfo(title, message string) error {
-	cmd := exec.Command("zenity", "--info", "--text", message, "--title", title)
-	if err := cmd.Run(); err != nil {
+	if err := zenity.Info(message, zenity.Title(title)); err != nil {
 		return fmt.Errorf("failed to send notification: %w", err)
 	}
 	return nil
 }
 
 func openFileSelector(title, message, fileName string) (string, error) {
-	cmd := exec.Command(
-		"zenity",
-		"--file-selection",
-		"--save",
-		"--confirm-overwrite",
-		"--title", title,
-		"--text", message,
-		"--filename", fileName,
+
+	output, err := zenity.SelectFileSave(
+		zenity.Title(title),
+		zenity.EntryText(message),
+		zenity.ConfirmOverwrite(),
+		zenity.Filename(fileName),
 	)
-	output, err := cmd.Output()
 	if err != nil {
 		return "", fmt.Errorf("failed to open file selector: %w", err)
 	}
