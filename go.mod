@@ -10,7 +10,7 @@ require (
 	github.com/coreos/go-systemd/v22 v22.5.0
 	github.com/google/uuid v1.6.0
 	github.com/ncruces/zenity v0.10.14
-	github.com/rclone/rclone v1.70.2
+	github.com/rclone/rclone v1.70.3
 	github.com/samber/lo v1.51.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
