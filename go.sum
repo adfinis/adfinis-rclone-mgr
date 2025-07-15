@@ -366,8 +366,8 @@ github.com/putdotio/go-putio/putio v0.0.0-20200123120452-16d982cac2b8 h1:Y258uzX
 github.com/putdotio/go-putio/putio v0.0.0-20200123120452-16d982cac2b8/go.mod h1:bSJjRokAHHOhA+XFxplld8w2R/dXLH7Z3BZ532vhFwU=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 h1:GranzK4hv1/pqTIhMTXt2X8MmMOuH3hMeUR0o9SP5yc=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844/go.mod h1:T1TLSfyWVBRXVGzWd0o9BI4kfoO9InEgfQe4NV3mLz8=
-github.com/rclone/rclone v1.70.2 h1:sN8meYL8f+FG/78hsbISRG+UHa6pRUKJokMGjQVwdok=
-github.com/rclone/rclone v1.70.2/go.mod h1:nLyN+hpxAsQn9Rgt5kM774lcRDad82x/KqQeBZ83cMo=
+github.com/rclone/rclone v1.70.3 h1:rg/WNh4DmSVZyKP2tHZ4lAaWEyMi7h/F0r7smOMA3IE=
+github.com/rclone/rclone v1.70.3/go.mod h1:nLyN+hpxAsQn9Rgt5kM774lcRDad82x/KqQeBZ83cMo=
 github.com/relvacode/iso8601 v1.6.0 h1:eFXUhMJN3Gz8Rcq82f9DTMW0svjtAVuIEULglM7QHTU=
 github.com/relvacode/iso8601 v1.6.0/go.mod h1:FlNp+jz+TXpyRqgmM7tnzHHzBnz776kmAH2h3sZCn0I=
 github.com/rfjakob/eme v1.1.2 h1:SxziR8msSOElPayZNFfQw4Tjx/Sbaeeh3eRvrHVMUs4=
