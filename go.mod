@@ -13,7 +13,7 @@ require (
 	github.com/rclone/rclone v1.70.3
 	github.com/samber/lo v1.51.0
 	github.com/spf13/cobra v1.9.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/oauth2 v0.30.0
 	golang.org/x/text v0.28.0
