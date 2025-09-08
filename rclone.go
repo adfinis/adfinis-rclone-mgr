@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"log"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/rclone/rclone/fs/config"
 	"github.com/rclone/rclone/fs/config/configfile"
 	"github.com/rclone/rclone/fs/rc"
+	"github.com/samber/lo"
 
 	_ "github.com/rclone/rclone/backend/drive" // make sure drive backend is registered
 )
@@ -19,8 +21,8 @@ func init() {
 	configfile.Install()
 }
 
-func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, clientSecret, token string) error {
-	// add drives
+func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, clientSecret, token string) ([]models.Drive, error) {
+	// add drives and remove deleted drives
 	for _, drive := range drives {
 		driveName := sanitizeDriveName(drive.Name)
 		if drive.Enabled {
@@ -59,7 +61,7 @@ func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, cl
 			}
 			_, err := config.CreateRemote(ctx, driveName, "drive", configMap, config.UpdateRemoteOpt{NonInteractive: true})
 			if err != nil {
-				return fmt.Errorf("failed to create remote %s: %w", driveName, err)
+				return nil, fmt.Errorf("failed to create remote %s: %w", driveName, err)
 			}
 			log.Printf("Added remote %q", driveName)
 		} else {
@@ -68,7 +70,28 @@ func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, cl
 			config.DeleteRemote(driveName)
 		}
 	}
-	return nil
+
+	// check for drives with a matching client secret that dont exist in gdrive anymore
+	deletedDrives := make([]models.Drive, 0)
+	allRemotes := config.GetRemotes()
+	driveNames := lo.Map(drives, func(d models.Drive, _ int) string {
+		return sanitizeDriveName(d.Name)
+	})
+	for _, remote := range allRemotes {
+		if slices.Contains(driveNames, remote.Name) {
+			continue
+		}
+		remoteClientID := config.GetValue(remote.Name, "client_id")
+		if remoteClientID == clientID {
+			config.DeleteRemote(remote.Name)
+			log.Printf("Removed remote %q", remote.Name)
+			deletedDrives = append(deletedDrives, models.Drive{
+				Name: remote.Name,
+			})
+		}
+	}
+
+	return deletedDrives, nil
 }
 
 func getRemotes() []string {
