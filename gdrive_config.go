@@ -251,7 +251,8 @@ func newHttpHandler(ctx context.Context, cancel context.CancelFunc) *http.ServeM
 			})
 		}
 
-		if err := handleRcloneConfig(ctx, result, clientID, clientSecret, string(tokenValue)); err != nil {
+		deletedDrives, err := handleRcloneConfig(ctx, result, clientID, clientSecret, string(tokenValue))
+		if err != nil {
 			log.Printf("Failed to handle rclone config: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			if err := templates.ComponentError(err.Error()).Render(ctx, w); err != nil {
@@ -261,7 +262,7 @@ func newHttpHandler(ctx context.Context, cancel context.CancelFunc) *http.ServeM
 			return
 		}
 
-		if err := handleSystemdServices(ctx, result); err != nil {
+		if err := handleSystemdServices(ctx, result, deletedDrives); err != nil {
 			log.Printf("Failed to handle systemd services: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			if err := templates.ComponentError(err.Error()).Render(ctx, w); err != nil {

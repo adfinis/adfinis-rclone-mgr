@@ -24,7 +24,7 @@ func removeDriveCache(name string) error {
 	return nil
 }
 
-func handleSystemdServices(ctx context.Context, drives []models.Drive) error {
+func handleSystemdServices(ctx context.Context, drives []models.Drive, deletedDrives []models.Drive) error {
 	conn, err := dbus.NewUserConnectionContext(ctx)
 	if err != nil {
 		return err
@@ -72,6 +72,24 @@ func handleSystemdServices(ctx context.Context, drives []models.Drive) error {
 			}
 		}
 	}
+
+	// handle deleted drives
+	for _, drive := range deletedDrives {
+		name := sanitizeDriveName(drive.Name)
+		if err := stopService(ctx, conn, name); err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		if err := disableService(ctx, conn, name); err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		if err := removeDriveCache(name); err != nil {
+			errs = append(errs, err)
+			continue
+		}
+	}
+
 	// pretty error string
 	if len(errs) > 0 {
 		errStr := "Error while handling systemd services:\n"
