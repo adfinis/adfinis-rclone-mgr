@@ -47,6 +47,16 @@ func handleRcloneConfig(ctx context.Context, drives []models.Drive, clientID, cl
 					"token":          token,
 					"shared_with_me": true,
 				}
+			case "starred_only":
+				configMap = rc.Params{
+					"type":           "drive",
+					"root_folder_id": "",
+					"scope":          "drive",
+					"client_id":      clientID,
+					"client_secret":  clientSecret,
+					"token":          token,
+					"starred_only":   true,
+				}
 			default:
 				// shared drive
 				configMap = rc.Params{
