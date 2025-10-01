@@ -301,6 +301,10 @@ func checkAvailableDrives(ctx context.Context, oauthConfig *oauth2.Config, token
 			Name: "Shared With Me",
 			ID:   "shared_with_me",
 		},
+		{
+			Name: "Starred Only",
+			ID:   "starred_only",
+		},
 	}
 	pageToken := ""
 	for {
