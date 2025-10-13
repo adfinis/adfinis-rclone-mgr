@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/ncruces/zenity v0.10.14
 	github.com/rclone/rclone v1.71.1
-	github.com/samber/lo v1.51.0
+	github.com/samber/lo v1.52.0
 	github.com/spf13/cobra v1.10.1
 	github.com/stretchr/testify v1.11.1
 	github.com/zalando/go-keyring v0.2.6
