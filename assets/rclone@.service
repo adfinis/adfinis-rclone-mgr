@@ -6,6 +6,9 @@ Wants=network-online.target
 Wants=adfinis-rclone-mgr@%i.service
 AssertPathIsDirectory="%h/google/%I"
 
+# Don't block system suspend
+Conflicts=sleep.target
+
 [Service]
 Type=notify
 ExecStart=/usr/bin/rclone mount \
