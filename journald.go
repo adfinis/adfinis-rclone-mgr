@@ -109,7 +109,7 @@ var ignoredErrorsByDrive = map[string][]string{
 		"failed to create directory",           // occurs when trying to create a directory without permissions
 		"failed to make directory",             // occurs when trying to create a directory without permissions
 		"Dir.Remove not empty",                 // occurs when trying to remove a non empty directory. Deletion still works because rclone will remove the files and then folders.
-                "no such host",                         // occurs with open files when standby and switching networks
+		"no such host",                         // occurs with open files when standby and switching networks
 	},
 }
 
