@@ -86,21 +86,53 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
             file_path = os.path.join("", *relative_path.split(os.sep)[1:-1])
             file_name = os.path.basename(relative_path)
 
-            cmd = ["rclone", "lsjson", f"{drive_name}:{file_path}"]
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-            files = json.loads(result.stdout)
+            # Check if file ends with .link.html and needs resolution
+            if file_name.endswith(".link.html"):
+                base_name = file_name[:-10]  # Remove .link.html suffix
+                
+                cmd = ["rclone", "lsjson", f"{drive_name}:{file_path}"]
+                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                files = json.loads(result.stdout)
 
-            if not files:
-                raise FileNotFoundError("No files returned from rclone lsjson")
+                if not files:
+                    raise FileNotFoundError("No files returned from rclone lsjson")
 
-            # find matching file by name
-            files = [f for f in files if f["Path"] == file_name]
-            if not files:
-                raise FileNotFoundError(f"File '{file_name}' not found in Google Drive")
+                # Find files that match the base name (without extension)
+                matches = []
+                for f in files:
+                    if f.get("IsDir"):
+                        continue
+                    # Get base name without extension
+                    file_base = os.path.splitext(f["Path"])[0]
+                    if file_base == base_name:
+                        matches.append(f)
 
-            # assuming the first file is the one we want
-            file = files[0]
-            return file
+                if len(matches) == 0:
+                    raise FileNotFoundError(f"File '{base_name}' not found on remote (searched in {drive_name}:{file_path})")
+                
+                if len(matches) > 1:
+                    match_names = [f["Path"] for f in matches]
+                    raise ValueError(f"Ambiguous file name: multiple files match '{base_name}' - found: {match_names}")
+                
+                # Return the actual file
+                return matches[0]
+            else:
+                # Original logic for non-.link.html files
+                cmd = ["rclone", "lsjson", f"{drive_name}:{file_path}"]
+                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                files = json.loads(result.stdout)
+
+                if not files:
+                    raise FileNotFoundError("No files returned from rclone lsjson")
+
+                # find matching file by name
+                files = [f for f in files if f["Path"] == file_name]
+                if not files:
+                    raise FileNotFoundError(f"File '{file_name}' not found in Google Drive")
+
+                # assuming the first file is the one we want
+                file = files[0]
+                return file
 
         except subprocess.CalledProcessError as e:
             subprocess.Popen(

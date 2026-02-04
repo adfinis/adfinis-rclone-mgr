@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -68,6 +69,63 @@ func toRclonePath(root, abs string) (remote, subpath string, err error) {
 	return remote, subpath, nil
 }
 
+// resolveActualFileName takes a file path that may end with .link.html and resolves it to the actual file name on google drive.
+// This is needed because Google Drive native files are exported as .link.html locally but have different extensions when listed with rclone.
+func resolveActualFileName(absGoogleRoot, filePath string) (string, error) {
+	if !strings.HasSuffix(filePath, ".link.html") {
+		return filePath, nil
+	}
+
+	absFilePath, err := filepath.Abs(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve absolute path: %w", err)
+	}
+
+	baseName := strings.TrimSuffix(filepath.Base(absFilePath), ".link.html")
+	dirPath := filepath.Dir(absFilePath)
+
+	remote, subpath, err := toRclonePath(absGoogleRoot, dirPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to convert path: %w", err)
+	}
+
+	rclonePath := fmt.Sprintf("%s:%s", remote, subpath)
+	cmd := exec.Command("rclone", "lsjson", rclonePath)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to list files with rclone lsjson %s: %w", rclonePath, err)
+	}
+
+	var files []struct {
+		Path  string `json:"Path"`
+		IsDir bool   `json:"IsDir"`
+	}
+	if err := json.Unmarshal(output, &files); err != nil {
+		return "", fmt.Errorf("failed to parse rclone output: %w", err)
+	}
+
+	var matches []string
+	for _, file := range files {
+		if file.IsDir {
+			continue
+		}
+		fileBase := strings.TrimSuffix(file.Path, filepath.Ext(file.Path))
+		if fileBase == baseName {
+			matches = append(matches, file.Path)
+		}
+	}
+
+	if len(matches) == 0 {
+		return "", fmt.Errorf("file not found on remote: %s (searched in %s)", baseName, rclonePath)
+	}
+
+	if len(matches) > 1 {
+		return "", fmt.Errorf("ambiguous file name: multiple files match '%s' - found: %v", baseName, matches)
+	}
+
+	return filepath.Join(dirPath, matches[0]), nil
+}
+
 // patchDestPath modifies the destination path to ensure the name of the source folder is added to the destination path.
 // otherwise rclone would copy the files into the destination directory without creating a subdirectory.
 func patchDestPath(src, dest string) string {
@@ -130,8 +188,19 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 		return
 	}
 
+	// Resolve .link.html files to their actual names first
+	resolvedSrcPaths := make([]string, len(srcPaths))
+	for i, src := range srcPaths {
+		resolved, err := resolveActualFileName(absGoogleRoot, src)
+		if err != nil {
+			showZenityError(fmt.Sprintf("Failed to resolve file name for %s: %v", src, err))
+			return
+		}
+		resolvedSrcPaths[i] = resolved
+	}
+
 	var filesCount int
-	for _, src := range srcPaths {
+	for _, src := range resolvedSrcPaths {
 		if isDir(src) {
 			if err := filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
 				if err == nil && !d.IsDir() {
@@ -187,7 +256,7 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 
 	filesDone := 0
 	var gotError bool
-	for _, src := range srcPaths {
+	for _, src := range resolvedSrcPaths {
 		select {
 		case <-cancelled:
 			log.Println("Operation cancelled by user")
@@ -291,9 +360,20 @@ func duplicateFiles(sources []string) {
 		return
 	}
 
+	// Resolve .link.html files to their actual names first
+	resolvedSources := make([]string, len(sources))
+	for i, src := range sources {
+		resolved, err := resolveActualFileName(absGoogleRoot, src)
+		if err != nil {
+			showZenityError(fmt.Sprintf("Failed to resolve file name for %s: %v", src, err))
+			return
+		}
+		resolvedSources[i] = resolved
+	}
+
 	// Count files for progress tracking
 	var filesCount int
-	for _, src := range sources {
+	for _, src := range resolvedSources {
 		if isDir(src) {
 			if err := filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
 				if err == nil && !d.IsDir() {
@@ -341,7 +421,7 @@ func duplicateFiles(sources []string) {
 	}()
 
 	filesDone := 0
-	for _, src := range sources {
+	for _, src := range resolvedSources {
 		select {
 		case <-cancelled:
 			log.Println("Operation cancelled by user")
