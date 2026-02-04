@@ -1,5 +1,4 @@
 ---
-
 version: 2
 
 before:
@@ -63,7 +62,6 @@ nfpms:
     dependencies:
       - rclone
       - nautilus-python
-      - xclip
       - zenity
       - python-httpx
     conflicts:
@@ -94,14 +92,12 @@ nfpms:
         dependencies:
           - rclone
           - python-nautilus
-          - xclip
           - zenity
           - python-httpx
       deb:
         dependencies:
           - rclone
           - python3-nautilus
-          - xclip
           - zenity
           - python3-httpx
 
@@ -117,7 +113,6 @@ aurs:
     depends:
       - rclone
       - python-nautilus
-      - xclip
       - zenity
       - python-httpx
     package: |-

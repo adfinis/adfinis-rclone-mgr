@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	clipboard "github.com/aymanbagabas/go-nativeclipboard"
 	"github.com/ncruces/zenity"
 	"github.com/spf13/cobra"
 	"golang.org/x/text/cases"
@@ -188,7 +189,6 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 		return
 	}
 
-	// Resolve .link.html files to their actual names first
 	resolvedSrcPaths := make([]string, len(srcPaths))
 	for i, src := range srcPaths {
 		resolved, err := resolveActualFileName(absGoogleRoot, src)
@@ -353,6 +353,186 @@ func isProgressString(s string) bool {
 		strings.Contains(s, "Copied (server side copy)") // old rclone versions
 }
 
+type rcloneFileMetadata struct {
+	Path     string `json:"Path"`
+	IsDir    bool   `json:"IsDir"`
+	ID       string `json:"ID"`
+	MimeType string `json:"MimeType"`
+}
+
+// getRcloneFileMetadata resolves a file path (including .link.html files) and returns its metadata from rclone.
+func getRcloneFileMetadata(absGoogleRoot, filePath string) (*rcloneFileMetadata, error) {
+	// Convert to absolute path first
+	absFilePath, err := filepath.Abs(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve absolute path: %w", err)
+	}
+
+	// Check if file is under Google Drive mount
+	isSub, err := isSubdir(absGoogleRoot, absFilePath)
+	if err != nil || !isSub {
+		return nil, fmt.Errorf("file must be inside your Google Drive mount")
+	}
+
+	baseName := filepath.Base(absFilePath)
+	isLinkHTML := strings.HasSuffix(baseName, ".link.html")
+	if isLinkHTML {
+		baseName = strings.TrimSuffix(baseName, ".link.html")
+	}
+
+	dirPath := filepath.Dir(absFilePath)
+	remote, subpath, err := toRclonePath(absGoogleRoot, dirPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert path: %w", err)
+	}
+
+	rclonePath := fmt.Sprintf("%s:%s", remote, subpath)
+	cmd := exec.Command("rclone", "lsjson", rclonePath)
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("failed to list files with rclone lsjson %s: %w", rclonePath, err)
+	}
+
+	var files []rcloneFileMetadata
+	if err := json.Unmarshal(output, &files); err != nil {
+		return nil, fmt.Errorf("failed to parse rclone output: %w", err)
+	}
+
+	if isLinkHTML {
+		// Find files that match the base name (without extension)
+		var matches []rcloneFileMetadata
+		for _, file := range files {
+			if file.IsDir {
+				continue
+			}
+			fileBase := strings.TrimSuffix(file.Path, filepath.Ext(file.Path))
+			if fileBase == baseName {
+				matches = append(matches, file)
+			}
+		}
+
+		if len(matches) == 0 {
+			return nil, fmt.Errorf("file not found on remote: %s (searched in %s)", baseName, rclonePath)
+		}
+
+		if len(matches) > 1 {
+			matchNames := make([]string, len(matches))
+			for i, m := range matches {
+				matchNames[i] = m.Path
+			}
+			return nil, fmt.Errorf("ambiguous file name: multiple files match '%s' - found: %v", baseName, matchNames)
+		}
+
+		return &matches[0], nil
+	}
+
+	// For non-.link.html files, find exact match
+	for _, file := range files {
+		if file.Path == baseName {
+			return &file, nil
+		}
+	}
+
+	return nil, fmt.Errorf("file '%s' not found in Google Drive", baseName)
+}
+
+// getGoogleDriveLink returns the Google Drive web link for a file.
+func getGoogleDriveLink(absGoogleRoot, filePath string) (string, error) {
+	metadata, err := getRcloneFileMetadata(absGoogleRoot, filePath)
+	if err != nil {
+		return "", err
+	}
+
+	if metadata.ID == "" {
+		return "", fmt.Errorf("file has no ID")
+	}
+
+	return fmt.Sprintf("https://drive.google.com/open?id=%s", metadata.ID), nil
+}
+
+// printLinks prints Google Drive links for the given files.
+func printLinks(cmd *cobra.Command, args []string) {
+	absGoogleRoot, err := filepath.Abs(getGooglePath())
+	if err != nil {
+		log.Fatalf("Failed to resolve Google Drive root: %v", err)
+	}
+
+	for _, filePath := range args {
+		link, err := getGoogleDriveLink(absGoogleRoot, filePath)
+		if err != nil {
+			log.Printf("Error getting link for %s: %v", filePath, err)
+			continue
+		}
+		fmt.Println(link)
+	}
+}
+
+// openInBrowser opens files in Google Drive web interface.
+func openInBrowser(filePaths []string) {
+	absGoogleRoot, err := filepath.Abs(getGooglePath())
+	if err != nil {
+		showZenityError("Failed to resolve Google Drive root")
+		return
+	}
+
+	for _, filePath := range filePaths {
+		metadata, err := getRcloneFileMetadata(absGoogleRoot, filePath)
+		if err != nil {
+			showZenityError(fmt.Sprintf("Failed to get file metadata for %s: %v", filePath, err))
+			continue
+		}
+
+		// Show warning for OpenDocument formats
+		openDocFormats := []string{
+			"application/vnd.oasis.opendocument.text",
+			"application/vnd.oasis.opendocument.spreadsheet",
+			"application/vnd.oasis.opendocument.presentation",
+		}
+		for _, format := range openDocFormats {
+			if metadata.MimeType == format {
+				if err := zenity.Warning(
+					"You are about to open an Open Document Format file.\n\nOpening this with Google Docs will create a copy of the file!",
+				); err != nil {
+					log.Printf("Failed to show warning dialog: %v", err)
+				}
+				break
+			}
+		}
+
+		url := fmt.Sprintf("https://drive.google.com/open?id=%s", metadata.ID)
+		cmd := exec.Command("xdg-open", url)
+		if err := cmd.Start(); err != nil {
+			showZenityError(fmt.Sprintf("Failed to open browser: %v", err))
+		}
+	}
+}
+
+// copyLinkToClipboard copies the Google Drive link to the clipboard.
+func copyLinkToClipboard(filePaths []string) {
+	if len(filePaths) == 0 {
+		showZenityError("No files provided")
+		return
+	}
+
+	absGoogleRoot, err := filepath.Abs(getGooglePath())
+	if err != nil {
+		showZenityError("Failed to resolve Google Drive root")
+		return
+	}
+
+	link, err := getGoogleDriveLink(absGoogleRoot, filePaths[0])
+	if err != nil {
+		showZenityError(fmt.Sprintf("Failed to get link: %v", err))
+		return
+	}
+
+	// Copy to clipboard using go-nativeclipboard
+	if _, err := clipboard.Text.Write([]byte(link)); err != nil {
+		log.Printf("Failed to copy to clipboard: %v", err)
+		showZenityError(fmt.Sprintf("Failed to copy link to clipboard: %v", err))
+	}
+}
+
 func duplicateFiles(sources []string) {
 	absGoogleRoot, err := filepath.Abs(getGooglePath())
 	if err != nil {
@@ -360,7 +540,6 @@ func duplicateFiles(sources []string) {
 		return
 	}
 
-	// Resolve .link.html files to their actual names first
 	resolvedSources := make([]string, len(sources))
 	for i, src := range sources {
 		resolved, err := resolveActualFileName(absGoogleRoot, src)
