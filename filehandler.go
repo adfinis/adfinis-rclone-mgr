@@ -186,6 +186,7 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 	}()
 
 	filesDone := 0
+	var gotError bool
 	for _, src := range srcPaths {
 		select {
 		case <-cancelled:
@@ -242,6 +243,9 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 		for scanner.Scan() {
 			line := scanner.Text()
 			fmt.Println(line)
+			if strings.Contains(line, "Failed") {
+				gotError = true
+			}
 			if isProgressString(line) {
 				filesDone++
 				percent := int(float64(filesDone) / float64(filesCount) * 100)
@@ -250,15 +254,27 @@ func runRcloneOp(op string, srcPaths []string, destDir string) {
 				}
 			}
 		}
+
+		if err := cmd.Wait(); err != nil {
+			showZenityError(fmt.Sprintf("rclone %s failed: %v", op, err))
+			return
+		}
+
+		if cmd.ProcessState.ExitCode() != 0 {
+			gotError = true
+		}
 	}
 	progressDialog.Close() // nolint:errcheck
-
-	msg := "File(s) copied successfully"
-	if op == "move" {
-		msg = "File(s) moved successfully"
-	}
-	if err := zenity.Info(msg); err != nil {
-		log.Println("Failed to show success dialog:", err)
+	if gotError {
+		showZenityError(fmt.Sprintf("One or more files failed to %s. Check the console for details.", op))
+	} else {
+		msg := "File(s) copied successfully"
+		if op == "move" {
+			msg = "File(s) moved successfully"
+		}
+		if err := zenity.Info(msg); err != nil {
+			log.Println("Failed to show success dialog:", err)
+		}
 	}
 }
 
