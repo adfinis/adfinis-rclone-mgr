@@ -42,6 +42,7 @@ func init() {
 		daemonCmd,
 		copyCmd,
 		moveCmd,
+		linkCmd,
 	)
 }
 
@@ -135,6 +136,15 @@ var moveCmd = &cobra.Command{
 		"You can use it as a drop-in replacement for the linux mv command, but with the added benefit of working across Google Drives.\n",
 	Args: cobra.MinimumNArgs(2),
 	Run:  move,
+}
+
+var linkCmd = &cobra.Command{
+	Use:   "link",
+	Short: "Print Google Drive web links for files",
+	Long: "The link command prints the Google Drive web URL for one or more files.\n" +
+		"The links can be used to open the files directly in a web browser.\n",
+	Args: cobra.MinimumNArgs(1),
+	Run:  printLinks,
 }
 
 func Execute() error {

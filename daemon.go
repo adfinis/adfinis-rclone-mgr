@@ -81,6 +81,10 @@ func handleGDriveOp(op string) http.HandlerFunc {
 		return handleGDriveOpWithFileSelect(op)
 	case "duplicate":
 		return handleGDriveOPDuplicate()
+	case "open":
+		return handleGDriveOpen()
+	case "link":
+		return handleGDriveLink()
 	default:
 		return func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
@@ -137,10 +141,42 @@ func handleGDriveOPDuplicate() http.HandlerFunc {
 	}
 }
 
+func handleGDriveOpen() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := parseOpRequestBody("open", w, r)
+		if req == nil {
+			return
+		}
+
+		// run in background
+		go openInBrowser(req.Sources)
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK")) // nolint:errcheck
+	}
+}
+
+func handleGDriveLink() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := parseOpRequestBody("link", w, r)
+		if req == nil {
+			return
+		}
+
+		// run in background
+		go copyLinkToClipboard(req.Sources)
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK")) // nolint:errcheck
+	}
+}
+
 func newHTTPHandler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/gdrive/copy", handleGDriveOp("copy"))
 	mux.HandleFunc("/gdrive/move", handleGDriveOp("move"))
 	mux.HandleFunc("/gdrive/duplicate", handleGDriveOp("duplicate"))
+	mux.HandleFunc("/gdrive/open", handleGDriveOp("open"))
+	mux.HandleFunc("/gdrive/link", handleGDriveOp("link"))
 	return mux
 }
