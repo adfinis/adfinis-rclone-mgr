@@ -61,8 +61,9 @@ nfpms:
       - archlinux
     dependencies:
       - rclone
-      - nautilus-python
       - zenity
+    recommends:
+      - nautilus-python
       - python-httpx
     conflicts:
       - adfinis-rclone-mount
@@ -91,14 +92,16 @@ nfpms:
       archlinux:
         dependencies:
           - rclone
-          - python-nautilus
           - zenity
+        recommends:
+          - python-nautilus
           - python-httpx
       deb:
         dependencies:
           - rclone
-          - python3-nautilus
           - zenity
+        recommends:
+          - python3-nautilus
           - python3-httpx
 
 aurs:
@@ -112,9 +115,10 @@ aurs:
     git_url: "ssh://aur@aur.archlinux.org/adfinis-rclone-mgr-bin.git"
     depends:
       - rclone
-      - python-nautilus
       - zenity
-      - python-httpx
+    optdepends:
+      - "nautilus-python: Nautilus integration"
+      - "python-httpx: for the Nautilus extension to work"
     package: |-
       cd ./{{ .ProjectName }}-v{{ .Version }}-linux-amd64
       # bin
