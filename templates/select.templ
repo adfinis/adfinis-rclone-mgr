@@ -9,12 +9,31 @@ templ ComponentDriveSelection(drives []models.Drive) {
 
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleAll(name, buttonId) {
+            const checkboxes = document.querySelectorAll('input[name="' + name + '"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+        }
+    </script>
 </head>
 
 <body>
     <div class="min-h-screen bg-[#f4f6fa] text-black font-['Source Sans Pro'] p-8">
         <form action="/generate" method="POST" class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
             <h2 class="text-2xl text-center text-[#2e4b98] font-bold mb-4">📂 Select Shared Drives</h2>
+            <div class="flex items-center justify-between bg-[#f9fafb] p-4 rounded border mb-2">
+                <span class="text-gray-600 italic">Toggle all:</span>
+                <div class="flex space-x-6">
+                    <button type="button" id="toggleEnable" onclick="toggleAll('drive', 'toggleEnable')" class="text-sm text-[#2e4b98] hover:underline font-medium">
+                        Toggle all
+                    </button>
+                    <button type="button" id="toggleAutomount" onclick="toggleAll('automount', 'toggleAutomount')" class="text-sm text-[#2e4b98] hover:underline font-medium">
+                        Toggle all
+                    </button>
+                </div>
+            </div>
             <div class="grid gap-4 mb-6">
                 for _, drive := range drives {
                 <div class="flex items-center justify-between bg-[#f9fafb] p-4 rounded border">

@@ -33,7 +33,7 @@ func ComponentDriveSelection(drives []models.Drive) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<html><head><script src=\"https://cdn.tailwindcss.com\"></script></head><body><div class=\"min-h-screen bg-[#f4f6fa] text-black font-['Source Sans Pro'] p-8\"><form action=\"/generate\" method=\"POST\" class=\"max-w-3xl mx-auto bg-white p-6 rounded-xl shadow\"><h2 class=\"text-2xl text-center text-[#2e4b98] font-bold mb-4\">📂 Select Shared Drives</h2><div class=\"grid gap-4 mb-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<html><head><script src=\"https://cdn.tailwindcss.com\"></script><script>\n        function toggleAll(name, buttonId) {\n            const checkboxes = document.querySelectorAll('input[name=\"' + name + '\"]');\n            const allChecked = Array.from(checkboxes).every(cb => cb.checked);\n\n            checkboxes.forEach(cb => cb.checked = !allChecked);\n        }\n    </script></head><body><div class=\"min-h-screen bg-[#f4f6fa] text-black font-['Source Sans Pro'] p-8\"><form action=\"/generate\" method=\"POST\" class=\"max-w-3xl mx-auto bg-white p-6 rounded-xl shadow\"><h2 class=\"text-2xl text-center text-[#2e4b98] font-bold mb-4\">📂 Select Shared Drives</h2><div class=\"flex items-center justify-between bg-[#f9fafb] p-4 rounded border mb-2\"><span class=\"text-gray-600 italic\">Toggle all:</span><div class=\"flex space-x-6\"><button type=\"button\" id=\"toggleEnable\" onclick=\"toggleAll('drive', 'toggleEnable')\" class=\"text-sm text-[#2e4b98] hover:underline font-medium\">Toggle all</button> <button type=\"button\" id=\"toggleAutomount\" onclick=\"toggleAll('automount', 'toggleAutomount')\" class=\"text-sm text-[#2e4b98] hover:underline font-medium\">Toggle all</button></div></div><div class=\"grid gap-4 mb-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -45,7 +45,7 @@ func ComponentDriveSelection(drives []models.Drive) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(drive.ID + ":" + drive.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 21, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 40, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -58,7 +58,7 @@ func ComponentDriveSelection(drives []models.Drive) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(drive.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 22, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 41, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -71,7 +71,7 @@ func ComponentDriveSelection(drives []models.Drive) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(drive.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 25, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 44, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -84,7 +84,7 @@ func ComponentDriveSelection(drives []models.Drive) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(drive.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 29, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/select.templ`, Line: 48, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
