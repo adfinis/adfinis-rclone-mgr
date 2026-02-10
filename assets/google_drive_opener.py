@@ -30,7 +30,11 @@ class GoogleDriveOpener(GObject.GObject, FileManager.MenuProvider):
         file_paths = []
         for file in files:
             file_path = file.get_location().get_path()
-            if not os.path.abspath(file_path).startswith(self.RCLONE_MOUNT_PATH):
+            abs_path = os.path.abspath(file_path)
+            if (
+                not abs_path.startswith(self.RCLONE_MOUNT_PATH)
+                or abs_path == self.RCLONE_MOUNT_PATH
+            ):
                 return
             file_paths.append(file_path)
 
