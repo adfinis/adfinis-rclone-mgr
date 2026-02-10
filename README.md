@@ -31,13 +31,13 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 1. Install the dependencies
    ```bash
    # debian / ubuntu
-   sudo apt install rclone python3-nautilus zenity
+   sudo apt install rclone python3-nautilus python3-httpx zenity
 
    # fedora / rhel
-   sudo dnf install rclone nautilus-python zenity
+   sudo dnf install rclone nautilus-python python-httpx zenity
 
    # arch
-   sudo pacman -S rclone python-nautilus zenity
+   sudo pacman -S rclone python-nautilus python-httpx zenity
    ```
 2. Clone the repository:
    ```bash
@@ -74,6 +74,10 @@ This repository provides a streamlined way to mount Google Drive using Rclone, t
 2. Open the provided URL in your browser to configure Google Drive mounts.
 3. Follow the on-screen instructions to log in, select drives, and generate configurations.
 4. Use the Nautilus context menu to open files directly in Google Drive or to copy files and folders between Google Drives using the special "Copy on Google Drive" action.
+
+### Nemo support
+There is also a Nemo extension that gets installed. If Nemo is your file manager of choice,
+make sure you also have `nemo-python` installed for the integration to work.
 
 ### Managing Mounts
 

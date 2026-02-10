@@ -1,17 +1,26 @@
-from gi.repository import Nautilus, GObject
+import sys
+from gi.repository import GObject
 import os
 import subprocess
 import httpx
 
+# hacky but most reliable way to detect if we're running within Nemo. We always fall
+# back to Nautilus
+if sys.argv[0] == "nemo":
+    from gi.repository import Nemo as FileManager
+else:
+    from gi.repository import Nautilus as FileManager
+
 """
-This extension adds a context menu item to Nautilus for opening files in Google Drive.
+This extension adds a context menu item to Nautilus and Nemo for opening files in Google
+Drive.
 It generates a public link using rclone and opens it in the default web browser.
 
 The extension expects rclone to mount the drives at ~/google/$drive_name.
 """
 
 
-class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
+class GoogleDriveOpener(GObject.GObject, FileManager.MenuProvider):
     RCLONE_MOUNT_PATH = os.path.expanduser("~/google")
 
     def get_file_items(self, *args):
@@ -26,7 +35,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
             file_paths.append(file_path)
 
         items = []
-        open_google_drive_item = Nautilus.MenuItem(
+        open_google_drive_item = FileManager.MenuItem(
             name="GoogleDriveOpener::OpenPublicURL",
             label="Open in Google Drive",
             tip="Open the file in Google Drive",
@@ -34,7 +43,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
         open_google_drive_item.connect("activate", self.open_rclone_url, file_paths)
         items.append(open_google_drive_item)
 
-        copy_file_item = Nautilus.MenuItem(
+        copy_file_item = FileManager.MenuItem(
             name="GoogleDriveOpener::CopyFile",
             label="Copy on Google Drive",
             tip="Copy on Google Drive",
@@ -42,7 +51,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
         copy_file_item.connect("activate", self.copy_file, file_paths)
         items.append(copy_file_item)
 
-        move_file_item = Nautilus.MenuItem(
+        move_file_item = FileManager.MenuItem(
             name="GoogleDriveOpener::MoveFile",
             label="Move on Google Drive",
             tip="Move on Google Drive",
@@ -50,7 +59,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
         move_file_item.connect("activate", self.move_file, file_paths)
         items.append(move_file_item)
 
-        duplicate_file_item = Nautilus.MenuItem(
+        duplicate_file_item = FileManager.MenuItem(
             name="GoogleDriveOpener::DuplicateFile",
             label="Duplicate on Google Drive",
             tip="Duplicate on Google Drive",
@@ -60,7 +69,7 @@ class GoogleDriveOpener(GObject.GObject, Nautilus.MenuProvider):
 
         # add copy button if only one file is selected
         if len(file_paths) == 1:
-            copy_file_link_item = Nautilus.MenuItem(
+            copy_file_link_item = FileManager.MenuItem(
                 name="GoogleDriveOpener::CopyShareLink",
                 label="Copy File Link",
                 tip="Copy the file link to the clipboard",

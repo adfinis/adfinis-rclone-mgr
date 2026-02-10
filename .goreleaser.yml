@@ -74,6 +74,8 @@ nfpms:
         dst: /usr/lib/systemd/user/rclone@.service
       - src: ./assets/google_drive_opener.py
         dst: /usr/share/nautilus-python/extensions/google_drive_opener.py
+      - src: ./assets/google_drive_opener.py
+        dst: /usr/share/nemo-python/extensions/google_drive_opener.py
       - src: ./assets/adfinis-rclone-mgr.desktop
         dst: /usr/share/applications/adfinis-rclone-mgr.desktop
       - src: ./assets/adfinis-rclone-mgr.png
@@ -130,6 +132,8 @@ aurs:
       install -Dm644 "./assets/rclone@.service" "${pkgdir}/usr/lib/systemd/user/rclone@.service"
       # nautilus extension
       install -Dm644 "./assets/google_drive_opener.py" "${pkgdir}/usr/share/nautilus-python/extensions/google_drive_opener.py"
+      # nemo extension
+      install -Dm644 "./assets/google_drive_opener.py" "${pkgdir}/usr/share/nemo-python/extensions/google_drive_opener.py"
       # desktop integration
       install -Dm644 "./assets/adfinis-rclone-mgr.desktop" "${pkgdir}/usr/share/applications/adfinis-rclone-mgr.desktop"
       install -Dm644 "./assets/adfinis-rclone-mgr.png" "${pkgdir}/usr/share/icons/hicolor/512x512/apps/adfinis-rclone-mgr.png"
