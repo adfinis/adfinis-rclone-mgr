@@ -36,6 +36,10 @@ class GoogleDriveOpener(GObject.GObject, FileManager.MenuProvider):
                 or abs_path == self.RCLONE_MOUNT_PATH
             ):
                 return
+            # Check if the path is only one level below google directory
+            rel_path = os.path.relpath(abs_path, self.RCLONE_MOUNT_PATH)
+            if os.sep not in rel_path:
+                return
             file_paths.append(file_path)
 
         items = []
