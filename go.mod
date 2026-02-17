@@ -5,7 +5,7 @@ go 1.24.4
 require (
 	github.com/a-h/templ v0.3.977
 	github.com/adrg/xdg v0.5.3
-	github.com/aymanbagabas/go-nativeclipboard v0.1.2
+	github.com/aymanbagabas/go-nativeclipboard v0.1.3
 	github.com/charmbracelet/fang v0.4.3
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/coreos/go-systemd/v22 v22.7.0
@@ -52,7 +52,7 @@ require (
 	github.com/danieljoos/wincred v1.2.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f // indirect
-	github.com/ebitengine/purego v0.10.0-alpha.3.0.20260102153238-200df6041cff // indirect
+	github.com/ebitengine/purego v0.10.0-alpha.4 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
