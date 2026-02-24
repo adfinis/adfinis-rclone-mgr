@@ -1,6 +1,6 @@
 module github.com/adfinis/adfinis-rclone-mgr/v2
 
-go 1.24.4
+go 1.25.0
 
 require (
 	github.com/a-h/templ v0.3.977
@@ -18,7 +18,7 @@ require (
 	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/oauth2 v0.35.0
 	golang.org/x/text v0.34.0
-	google.golang.org/api v0.266.0
+	google.golang.org/api v0.268.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
