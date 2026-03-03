@@ -12,7 +12,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/ncruces/zenity v0.10.14
 	github.com/rclone/rclone v1.73.1
-	github.com/samber/lo v1.52.0
+	github.com/samber/lo v1.53.0
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 	github.com/zalando/go-keyring v0.2.6
