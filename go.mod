@@ -3,7 +3,7 @@ module github.com/adfinis/adfinis-rclone-mgr/v2
 go 1.25.0
 
 require (
-	github.com/a-h/templ v0.3.977
+	github.com/a-h/templ v0.3.1001
 	github.com/adrg/xdg v0.5.3
 	github.com/aymanbagabas/go-nativeclipboard v0.1.3
 	github.com/charmbracelet/fang v0.4.3
