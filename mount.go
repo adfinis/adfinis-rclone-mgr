@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"os/exec"
 
 	"charm.land/lipgloss/v2"
@@ -141,14 +140,12 @@ func renderTable(statuses []dbus.UnitStatus) {
 		}
 	}
 
-	re := lipgloss.NewRenderer(os.Stdout)
-
-	cellStyle := re.NewStyle().Padding(0, 1)
+	cellStyle := lipgloss.NewStyle().Padding(0, 1)
 	headerStyle := cellStyle.Bold(true).Align(lipgloss.Center)
 
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
-		BorderStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("2e4b98"))).
+		BorderStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("#2e4b98"))).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			switch row {
 			case table.HeaderRow:
@@ -161,7 +158,7 @@ func renderTable(statuses []dbus.UnitStatus) {
 		Rows(rows...)
 
 	fmt.Println()
-	fmt.Println(t)
+	lipgloss.Println(t) //nolint:errcheck
 	fmt.Println()
 }
 
