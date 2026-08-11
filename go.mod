@@ -3,11 +3,11 @@ module github.com/adfinis/adfinis-rclone-mgr/v2
 go 1.25.8
 
 require (
+	charm.land/fang/v2 v2.0.1
 	charm.land/lipgloss/v2 v2.0.5
 	github.com/a-h/templ v0.3.1020
 	github.com/adrg/xdg v0.5.3
 	github.com/aymanbagabas/go-nativeclipboard v0.1.3
-	github.com/charmbracelet/fang/v2 v2.0.1
 	github.com/coreos/go-systemd/v22 v22.7.0
 	github.com/google/uuid v1.6.0
 	github.com/ncruces/zenity v0.10.15
@@ -35,7 +35,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20251205161215-1948445e3318 // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260205113103-524a6607adb8 // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect
 	github.com/charmbracelet/x/exp/charmtone v0.0.0-20250603201427-c31516f43444 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
