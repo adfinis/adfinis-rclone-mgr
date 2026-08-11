@@ -7,7 +7,7 @@ require (
 	github.com/a-h/templ v0.3.1020
 	github.com/adrg/xdg v0.5.3
 	github.com/aymanbagabas/go-nativeclipboard v0.1.3
-	github.com/charmbracelet/fang v1.0.0
+	github.com/charmbracelet/fang/v2 v2.0.1
 	github.com/coreos/go-systemd/v22 v22.7.0
 	github.com/google/uuid v1.6.0
 	github.com/ncruces/zenity v0.10.15
