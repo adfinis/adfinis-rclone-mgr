@@ -10,7 +10,7 @@ require (
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/coreos/go-systemd/v22 v22.7.0
 	github.com/google/uuid v1.6.0
-	github.com/ncruces/zenity v0.10.14
+	github.com/ncruces/zenity v0.10.15
 	github.com/rclone/rclone v1.74.4
 	github.com/samber/lo v1.53.0
 	github.com/spf13/cobra v1.10.2
@@ -51,7 +51,7 @@ require (
 	github.com/coreos/go-semver v0.3.1 // indirect
 	github.com/danieljoos/wincred v1.2.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f // indirect
+	github.com/dchest/jsmin v1.0.0 // indirect
 	github.com/ebitengine/purego v0.10.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -66,7 +66,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.23.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/josephspurrier/goversioninfo v1.5.0 // indirect
+	github.com/josephspurrier/goversioninfo v1.7.0 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/jzelinskie/whirlpool v0.0.0-20201016144138-0675e54bb004 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
@@ -92,7 +92,7 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
-	github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 // indirect
+	github.com/randall77/makefat v0.0.0-20260406194835-1b91746796b7 // indirect
 	github.com/rfjakob/eme v1.2.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.3 // indirect
@@ -115,7 +115,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
-	golang.org/x/image v0.43.0 // indirect
+	golang.org/x/image v0.44.0 // indirect
 	golang.org/x/mod v0.37.0 // indirect
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect

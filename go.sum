@@ -190,6 +190,8 @@ github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f h1:OGqDDftRTwrvUoL6pOG7rYTmWsTCvyEWFsMjg+HcOaA=
 github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f/go.mod h1:Dv9D0NUlAsaQcGQZa5kc5mqR9ua72SmA8VXi4cd+cBw=
+github.com/dchest/jsmin v1.0.0 h1:Y2hWXmGZiRxtl+VcTksyucgTlYxnhPzTozCwx9gy9zI=
+github.com/dchest/jsmin v1.0.0/go.mod h1:AVBIund7Mr7lKXT70hKT2YgL3XEXUaUk5iw9DZ8b0Uc=
 github.com/diskfs/go-diskfs v1.7.0 h1:vonWmt5CMowXwUc79jWyGrf2DIMeoOjkLlMnQYGVOs8=
 github.com/diskfs/go-diskfs v1.7.0/go.mod h1:LhQyXqOugWFRahYUSw47NyZJPezFzB9UELwhpszLP/k=
 github.com/dromara/dongle v1.0.1 h1:si/7UP/EXxnFVZok1cNos70GiMGxInAYMilHQFP5dJs=
@@ -300,6 +302,8 @@ github.com/jlaffaye/ftp v0.2.1-0.20251026020404-6602e981a1bb h1:6vkM8gO+zFV2m21Q
 github.com/jlaffaye/ftp v0.2.1-0.20251026020404-6602e981a1bb/go.mod h1:H1+whwD0Qe3YOunlXIWhh3rlvzW5cZfkMDYGQPg+KAM=
 github.com/josephspurrier/goversioninfo v1.5.0 h1:9TJtORoyf4YMoWSOo/cXFN9A/lB3PniJ91OxIH6e7Zg=
 github.com/josephspurrier/goversioninfo v1.5.0/go.mod h1:6MoTvFZ6GKJkzcdLnU5T/RGYUbHQbKpYeNP0AgQLd2o=
+github.com/josephspurrier/goversioninfo v1.7.0 h1:LQzXOlVm/CtbwJ9/UHl5a2HT0BjcLAwid5gqGd7ZUJ8=
+github.com/josephspurrier/goversioninfo v1.7.0/go.mod h1:z9y0r2G6g5jwSJaFE0cxW9to0aeIibK7UYeLx53aQRU=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/jtolio/noiseconn v0.0.0-20231127013910-f6d9ecbf1de7 h1:JcltaO1HXM5S2KYOYcKgAV7slU0xPy1OcvrVgn98sRQ=
@@ -361,6 +365,8 @@ github.com/natefinch/atomic v1.0.1 h1:ZPYKxkqQOx3KZ+RsbnP/YsgvxWQPGxjC0oBt2AhwV0
 github.com/natefinch/atomic v1.0.1/go.mod h1:N/D/ELrljoqDyT3rZrsUmtsuzvHkeB/wWjHV22AZRbM=
 github.com/ncruces/zenity v0.10.14 h1:OBFl7qfXcvsdo1NUEGxTlZvAakgWMqz9nG38TuiaGLI=
 github.com/ncruces/zenity v0.10.14/go.mod h1:ZBW7uVe/Di3IcRYH0Br8X59pi+O6EPnNIOU66YHpOO4=
+github.com/ncruces/zenity v0.10.15 h1:UaHekkxwt7QjoZmMWtzhqSEtQT97/Cux6FDBWwfyuqk=
+github.com/ncruces/zenity v0.10.15/go.mod h1:45d81tt+vF/UjBjlWE/vvE0oD0hWuHUQld4vPbA4VxE=
 github.com/ncw/swift/v2 v2.0.5 h1:9o5Gsd7bInAFEqsGPcaUdsboMbqf8lnNtxqWKFT9iz8=
 github.com/ncw/swift/v2 v2.0.5/go.mod h1:cbAO76/ZwcFrFlHdXPjaqWZ9R7Hdar7HpjRXBfbjigk=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
@@ -405,6 +411,8 @@ github.com/putdotio/go-putio/putio v0.0.0-20200123120452-16d982cac2b8 h1:Y258uzX
 github.com/putdotio/go-putio/putio v0.0.0-20200123120452-16d982cac2b8/go.mod h1:bSJjRokAHHOhA+XFxplld8w2R/dXLH7Z3BZ532vhFwU=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 h1:GranzK4hv1/pqTIhMTXt2X8MmMOuH3hMeUR0o9SP5yc=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844/go.mod h1:T1TLSfyWVBRXVGzWd0o9BI4kfoO9InEgfQe4NV3mLz8=
+github.com/randall77/makefat v0.0.0-20260406194835-1b91746796b7 h1:m1yKMZwDSXkT5o2MKhd6ihdzb2dYb6eElNE04xjOSEY=
+github.com/randall77/makefat v0.0.0-20260406194835-1b91746796b7/go.mod h1:T1TLSfyWVBRXVGzWd0o9BI4kfoO9InEgfQe4NV3mLz8=
 github.com/rclone/Proton-API-Bridge v1.0.3 h1:Bs7RC4xCFSN0BPIYVda/BNxp0qo3NV0gB2VZqx2KIew=
 github.com/rclone/Proton-API-Bridge v1.0.3/go.mod h1:26RAest751Ofk+F/d8xtl4UyWXrZvMQwn39U8rm/WKM=
 github.com/rclone/go-proton-api v1.0.2 h1:cJtJUab0MGJ3C6q5kiEJs3pbyhSLnOKMyYOQehA0PBc=
@@ -522,6 +530,8 @@ golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f h1:W3F4c+6OLc6H2lb//N1q4WpJk
 golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f/go.mod h1:J1xhfL/vlindoeF/aINzNzt2Bket5bjo9sdOYzOsU80=
 golang.org/x/image v0.43.0 h1:FLxcP4ec2350nTfOC8ysKtqYSIFbk/QGjw1ZHNP4tsY=
 golang.org/x/image v0.43.0/go.mod h1:rrpelvGFt+kLPAjPM4HeWPgrl0FtafueU//e5N0qk/Q=
+golang.org/x/image v0.44.0 h1:+tDekMZED9+LrtB3G5xzRggpVh9CARjZqROla3R3R+I=
+golang.org/x/image v0.44.0/go.mod h1:V8K3KE9KKKE+pLpQDOeN18w9oacNSvy1tDOirTu4xtY=
 golang.org/x/mod v0.3.0/go.mod h1:s0Qsj1ACt9ePp/hMypM3fl4fZqREWJwdYDEqhRiZZUA=
 golang.org/x/mod v0.4.0/go.mod h1:s0Qsj1ACt9ePp/hMypM3fl4fZqREWJwdYDEqhRiZZUA=
 golang.org/x/mod v0.37.0 h1:vF1DjpVEshcIqoEaauuHebaLk1O1forxjxBaVn884JQ=
