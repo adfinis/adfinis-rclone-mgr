@@ -4,7 +4,7 @@ go 1.25.8
 
 require (
 	charm.land/fang/v2 v2.0.1
-	charm.land/lipgloss/v2 v2.0.5
+	charm.land/lipgloss/v2 v2.0.6
 	github.com/a-h/templ v0.3.1020
 	github.com/adrg/xdg v0.5.3
 	github.com/aymanbagabas/go-nativeclipboard v0.1.3
@@ -35,8 +35,8 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20260205113103-524a6607adb8 // indirect
-	github.com/charmbracelet/x/ansi v0.11.7 // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260811164956-006e29f97886 // indirect
+	github.com/charmbracelet/x/ansi v0.11.8 // indirect
 	github.com/charmbracelet/x/exp/charmtone v0.0.0-20250603201427-c31516f43444 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
@@ -67,7 +67,7 @@ require (
 	github.com/jzelinskie/whirlpool v0.0.0-20201016144138-0675e54bb004 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/lanrat/extsort v1.4.2 // indirect
-	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
+	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/lufia/plan9stats v0.0.0-20260627054121-477a66015f15 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.23 // indirect
