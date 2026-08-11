@@ -8,8 +8,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/table"
 	"github.com/coreos/go-systemd/v22/dbus"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
