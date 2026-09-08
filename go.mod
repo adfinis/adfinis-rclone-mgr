@@ -11,14 +11,14 @@ require (
 	github.com/coreos/go-systemd/v22 v22.7.0
 	github.com/google/uuid v1.6.0
 	github.com/ncruces/zenity v0.10.15
-	github.com/rclone/rclone v1.75.0
+	github.com/rclone/rclone v1.75.1
 	github.com/samber/lo v1.53.0
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.12.1
 	github.com/zalando/go-keyring v0.2.8
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/text v0.41.0
-	google.golang.org/api v0.295.0
+	google.golang.org/api v0.297.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
