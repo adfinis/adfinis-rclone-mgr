@@ -36,7 +36,7 @@ jobs:
           jwtGithubAudience: https://github.com/adfinis
           exportEnv: false
           secrets: |
-            adfinis-kv/data/partner/aur.archlinux.org/web/ag01-u02 private_key | AUR_KEY
+            adfinis-kv/data/partner/aur.archlinux.org/web/ag01-u02 ssh_key | AUR_KEY
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
