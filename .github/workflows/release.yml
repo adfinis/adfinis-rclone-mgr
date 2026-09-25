@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   goreleaser:
@@ -24,6 +25,18 @@ jobs:
           cache: false
       - name: Install Syft
         uses: anchore/sbom-action/download-syft@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
+      - name: Get AUR key from OpenBao
+        id: bao
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4.0.0
+        with:
+          url: https://bao.adfinis.com
+          method: jwt
+          path: jwt-github
+          role: adfinis-readonly-adfinis-rclone-mgr-aur
+          jwtGithubAudience: https://github.com/adfinis
+          exportEnv: false
+          secrets: |
+            adfinis-kv/data/partner/aur.archlinux.org/web/ag01-u02 private_key | AUR_KEY
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
@@ -32,4 +45,4 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AUR_KEY: ${{ secrets.AUR_KEY }}
+          AUR_KEY: ${{ steps.bao.outputs.AUR_KEY }}
