@@ -117,7 +117,7 @@ require (
 	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/tools v0.49.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260819154853-08b0e4226688 // indirect
-	google.golang.org/grpc v1.84.0-dev.0.20260723093437-b6eac429d7b6 // indirect
+	google.golang.org/grpc v1.84.0-dev.0.20260825144003-d5a41119e0e3 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	moul.io/http2curl/v2 v2.3.0 // indirect
 )
