@@ -3,5 +3,14 @@
     "github>adfinis/renovate-config",
     "github>adfinis/renovate-config:app",
     "github>adfinis/renovate-config:quiet"
+  ],
+  "packageRules": [
+    {
+      "description": "dedicated templ updates",
+      "matchManagers": ["gomod"],
+      "matchPackageNames": ["github.com/a-h/templ"],
+      "groupName": null,
+      "groupSlug": null
+    }
   ]
 }
