@@ -1,10 +1,10 @@
 module github.com/adfinis/adfinis-rclone-mgr/v2
 
-go 1.26.0
+go 1.26.7
 
 require (
 	charm.land/fang/v2 v2.0.1
-	charm.land/lipgloss/v2 v2.0.6
+	charm.land/lipgloss/v2 v2.1.0
 	github.com/a-h/templ v0.3.1100
 	github.com/adrg/xdg v0.5.3
 	github.com/aymanbagabas/go-nativeclipboard v0.1.3
