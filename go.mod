@@ -4,7 +4,7 @@ go 1.26.7
 
 require (
 	charm.land/fang/v2 v2.0.1
-	charm.land/lipgloss/v2 v2.1.0
+	charm.land/lipgloss/v2 v2.1.1
 	github.com/a-h/templ v0.3.1118
 	github.com/adrg/xdg v0.5.3
 	github.com/aymanbagabas/go-nativeclipboard v0.1.3
@@ -18,7 +18,7 @@ require (
 	github.com/zalando/go-keyring v0.2.8
 	golang.org/x/oauth2 v0.38.0
 	golang.org/x/text v0.44.0
-	google.golang.org/api v0.314.0
+	google.golang.org/api v0.315.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
